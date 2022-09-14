@@ -1,0 +1,136 @@
+#syntax=docker/dockerfile:1.4
+
+ARG ANYBODY_VERSION=7.4.2
+ARG ANYBODY_VERSION_SHORT=7.4
+ARG ANYBODY_FOLDER=AnyBody.7.4
+
+ARG BASE_IMAGE="mambaorg/micromamba"
+ARG ANYBODY_LINUX_MINIMAL="ghcr.io/anybody/anybodycon-linux-minimal"
+
+
+# Buster slim is a debian based image, 
+# using buster allows us to get an older version of wine
+# ARG WINEVERSION="7.0.0.0~bullseye"
+#ARG WINEVERSION="6.0.4~bullseye"
+# ARG WINEVERSION="5.0.4~bullseye"
+
+# ARG TAG="git-7de8286-buster-slim"
+# ARG WINECHANNEL="devel"
+# ARG DEBIAN_VERSION="buster"
+# ARG WINEVERSION="2.22.0~buster"
+
+# ARG TAG="git-7de8286-buster-slim"
+# ARG WINECHANNEL="stable"
+# ARG DEBIAN_VERSION="buster"
+# ARG WINEVERSION="2.0.4~buster"
+
+ARG TAG="git-7de8286-bullseye-slim"
+ARG WINECHANNEL="stable"
+ARG DEBIAN_VERSION="bullseye"
+ARG WINEVERSION="4.0.4~bullseye"
+
+## Configure to use container build store which has the files from AnyBody 
+FROM ghcr.io/anybody/container-build-store:${ANYBODY_VERSION} as anybody-build-store
+
+
+# Run an intermediate docker step to get the Wine apt sources/keys, and build 
+# a dummy wine-stable-i386 package to shawdows the 32bit dependency.
+FROM ${BASE_IMAGE}:${TAG} AS build-base
+ARG WINECHANNEL
+ARG DEBIAN_VERSION
+ARG WINEVERSION
+ARG ANYBODY_VERSION
+ARG ANYBODY_VERSION_SHORT
+ARG ANYBODY_FOLDER
+USER root
+# Get the necessary apt list and keys to install from winehq
+RUN apt-get update \
+    && DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends \
+        gnupg software-properties-common equivs wget \
+    && wget -nc https://dl.winehq.org/wine-builds/winehq.key \
+    && mv winehq.key /usr/share/keyrings/winehq-archive.key \
+    && wget -nc https://dl.winehq.org/wine-builds/debian/dists/${DEBIAN_VERSION}/winehq-${DEBIAN_VERSION}.sources \
+    && mv winehq-${DEBIAN_VERSION}.sources /etc/apt/sources.list.d/ 
+# Build a fake wine-stable-i386 deb package so we can install wine without 32 bit
+COPY wine-xxx-i386 /wine-${WINECHANNEL}-i386
+RUN sed -i 's/{{WINEVERSION}}/'${WINEVERSION}'/g' /wine-${WINECHANNEL}-i386 
+RUN sed -i 's/{{WINECHANNEL}}/'${WINECHANNEL}'/g' /wine-${WINECHANNEL}-i386 
+RUN equivs-build /wine-${WINECHANNEL}-i386 \
+    mv wine-${WINECHANNEL}-i386_${WINEVERSION}_all.deb /tmp/
+
+
+
+
+
+FROM ${BASE_IMAGE}:${TAG}
+LABEL org.opencontainers.image.source https://github.com/anybody/anybody-container
+ARG WINEVERSION
+ARG WINECHANNEL
+ARG ANYBODY_VERSION
+ARG ANYBODY_VERSION_SHORT
+ARG ANYBODY_FOLDER
+
+USER root
+
+# ## Make sure apt installs stuff in noninteractive mode 
+# ENV DEBIAN_FRONTEND noninteractive
+# ENV DEBCONF_NONINTERACTIVE_SEEN true
+# ## preesed tzdata, update package index, upgrade packages and install needed software
+# RUN truncate -s0 /tmp/preseed.cfg; \
+#     echo "tzdata tzdata/Areas select Europe" >> /tmp/preseed.cfg; \
+#     echo "tzdata tzdata/Zones/Europe select Copenhagen" >> /tmp/preseed.cfg; \
+#     debconf-set-selections /tmp/preseed.cfg && \
+#     rm -f /etc/timezone /etc/localtime && \
+#     apt-get update && \
+#     apt-get install --no-install-recommends --no-upgrade -y tzdata
+
+ENV WINEPREFIX=/wine
+
+
+COPY --from=build-base /tmp/wine-${WINECHANNEL}-i386_${WINEVERSION}_all.deb /tmp/
+# COPY --from=build-base /etc/apt/trusted.gpg  /etc/apt/trusted.gpg
+# COPY --from=build-base /etc/apt/sources.list  /etc/apt/sources.list
+COPY --from=build-base /etc/apt/sources.list.d/ /etc/apt/sources.list.d/
+COPY --from=build-base /usr/share/keyrings/winehq-archive.key /usr/share/keyrings/winehq-archive.key
+
+RUN apt-get update \
+    && dpkg -i /tmp/wine-${WINECHANNEL}-i386_${WINEVERSION}_all.deb \
+    && apt-get install -y --no-install-recommends --no-upgrade wine-${WINECHANNEL}-amd64=${WINEVERSION} \
+    && apt-get install -y --no-install-recommends --no-upgrade wine-${WINECHANNEL}=${WINEVERSION} \
+    && ln /opt/wine-${WINECHANNEL}/bin/wine64 /opt/wine-${WINECHANNEL}/bin/wine \
+    && apt autoremove -y \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+
+ENV PATH="/opt/wine-${WINECHANNEL}/bin:${PATH}"
+ENV WINEDEBUG=-all
+ENV RLM_LICENSE=5053@104.46.46.229
+ENV RLM_LICENSE_PASSWORD=12345
+
+
+RUN mkdir -p /github && chown -R $MAMBA_USER: /github && \
+    mkdir -p ${WINEPREFIX} && chown -R $MAMBA_USER: $WINEPREFIX && \
+    echo -e '#!/bin/bash\n'"wine /wine/drive_c/Program\ Files/AnyBody\ Technology/${ANYBODY_FOLDER}/AnyBodyCon.exe \"\$@\"\n" > /usr/bin/anybodycon && \
+    chmod +x /usr/bin/anybodycon
+
+USER $MAMBA_USER
+ 
+
+RUN winecfg 
+
+
+COPY --from=anybody-build-store --chown=${MAMBA_USER} --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/${ANYBODY_FOLDER}/"]
+
+ 
+RUN wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command1 /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\${ANYBODY_FOLDER}\AnyBody.exe\" \"%1\"" && \
+    mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Local/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION_SHORT}.x && \
+    mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION_SHORT}.x && \
+    mkdir -p /wine/drive_c/users/${MAMBA_USER}/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION_SHORT}.x && \
+    mkdir -p /wine/drive_c/ProgramData/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION_SHORT}.x && \
+    mkdir -p /wine/drive_c/users/${MAMBA_USER}/Local\ Settings/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION_SHORT}.x && \
+    ln -s /home/${MAMBA_USER} /github/home
+
+
+
+
+
