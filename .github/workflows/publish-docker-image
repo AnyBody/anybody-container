@@ -14,7 +14,7 @@ on:
     branches: ['release']
   pull_request:
     branches:
-      - 'master'
+      - 'main'
 
 
 env:
