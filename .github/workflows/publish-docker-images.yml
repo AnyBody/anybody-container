@@ -56,8 +56,8 @@ jobs:
             ANYBODY_VERSION=7.4
             ANYBODY_PATCH_VERSION=2
           tags: |
-              ghcr.io/anybodycon-linux-minimal:7.4.2-1
-              ghcr.io/anybodycon-linux-minimal:latest
+              ghcr.io/anybody/anybodycon-linux-minimal:7.4.2-1
+              ghcr.io/anybody/anybodycon-linux-minimal:latest
 
       - name: Build and push linux package
         uses: docker/build-push-action@v3
@@ -68,7 +68,6 @@ jobs:
             ANYBODY_VERSION=7.4
             ANYBODY_PATCH_VERSION=2
             BUILD_NUMBER=1
-            BASE_IMAGE="anybodycon-linux-minimal"
           tags: |
               ghcr.io/anybodycon-linux:7.4.2-1
               ghcr.io/anybodycon-linux:latest
