@@ -73,46 +73,46 @@ jobs:
               ghcr.io/anybodycon-linux:latest
 
 
-  build-and-push-anybodycon-linux:
-    runs-on: ubuntu-latest
-    needs: build-and-push-anybodycon-linux-minimal
-    permissions:
-      contents: read
-      packages: write
-    env:
-      IMAGE_NAME: anybodycon-linux
+  # build-and-push-anybodycon-linux:
+  #   runs-on: ubuntu-latest
+  #   needs: build-and-push-anybodycon-linux-minimal
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #   env:
+  #     IMAGE_NAME: anybodycon-linux
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
         
 
-      - name: Log in to the Container registry
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Log in to the Container registry
+  #       if: ${{ github.event_name != 'pull_request' }}
+  #       uses: docker/login-action@v2
+  #       with:
+  #         registry: ${{ env.REGISTRY }}
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+  #     - name: Extract metadata (tags, labels) for Docker
+  #       id: meta
+  #       uses: docker/metadata-action@v4
+  #       with:
+  #         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
 
-      - name: Build and push linux package
-        uses: docker/build-push-action@v3
-        with:
-          file: anybodycon-linux/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
-          build-args: |
-            ANYBODY_VERSION=7.4
-            ANYBODY_PATCH_VERSION=2
-            BUILD_NUMBER=0
-          tags: |
-              ghcr.io/anybodycon-linux:7.4.2-1
-              ghcr.io/anybodycon-linux:latest
-          labels: ${{ steps.meta.outputs.labels }}
+  #     - name: Build and push linux package
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         file: anybodycon-linux/Dockerfile
+  #         push: ${{ github.event_name != 'pull_request' }}
+  #         build-args: |
+  #           ANYBODY_VERSION=7.4
+  #           ANYBODY_PATCH_VERSION=2
+  #           BUILD_NUMBER=0
+  #         tags: |
+  #             ghcr.io/anybodycon-linux:7.4.2-1
+  #             ghcr.io/anybodycon-linux:latest
+  #         labels: ${{ steps.meta.outputs.labels }}
