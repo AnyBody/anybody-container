@@ -113,7 +113,7 @@ RUN mkdir -p /github && chown -R $MAMBA_USER: /github && \
     echo -e '#!/bin/bash\n'"wine /wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}/AnyBodyCon.exe \"\$@\"\n" > /usr/bin/anybodycon && \
     chmod +x /usr/bin/anybodycon
 
-USER $MAMBA_USER
+USER ${MAMBA_USER}
  
 
 RUN winecfg 
