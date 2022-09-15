@@ -47,12 +47,10 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-
-
       - name: Build and push linux minimal package
         uses: docker/build-push-action@v3
         with:
-          file: anybodycon-linux-minimal/Dockerfile
+          file: Dockerfile-anybodycon-linux-minimal
           push: ${{ github.event_name != 'pull_request' }}
           build-args: |
             ANYBODY_VERSION=7.4
@@ -60,7 +58,20 @@ jobs:
           tags: |
               ghcr.io/anybodycon-linux-minimal:7.4.2-1
               ghcr.io/anybodycon-linux-minimal:latest
-          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Build and push linux package
+        uses: docker/build-push-action@v3
+        with:
+          file: Dockerfile-anybodycon-linux
+          push: ${{ github.event_name != 'pull_request' }}
+          build-args: |
+            ANYBODY_VERSION=7.4
+            ANYBODY_PATCH_VERSION=2
+            BUILD_NUMBER=1
+          tags: |
+              ghcr.io/anybodycon-linux:7.4.2-1
+              ghcr.io/anybodycon-linux:latest
+
 
   build-and-push-anybodycon-linux:
     runs-on: ubuntu-latest
@@ -74,6 +85,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+        
 
       - name: Log in to the Container registry
         if: ${{ github.event_name != 'pull_request' }}
