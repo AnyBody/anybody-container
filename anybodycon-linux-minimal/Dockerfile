@@ -119,17 +119,28 @@ USER $MAMBA_USER
 RUN winecfg 
 
 
-COPY --from=anybody-build-store --chown=${MAMBA_USER} --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}/"]
-#COPY --from=anybody-build-store --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}/"]
+#COPY --from=anybody-build-store --chown=${MAMBA_USER} --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}/"]
+COPY --from=anybody-build-store --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}/"]
 
  
-RUN wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command1 /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}\AnyBody.exe\" \"%1\"" && \
-    mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Local/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    mkdir -p /wine/drive_c/users/${MAMBA_USER}/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    mkdir -p /wine/drive_c/ProgramData/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    mkdir -p /wine/drive_c/users/${MAMBA_USER}/Local\ Settings/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    ln -s /home/${MAMBA_USER} /github/home
+RUN wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command1 /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}\AnyBody.exe\" \"%1\"" 
+RUN mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Local/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x 
+RUN mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x 
+RUN mkdir -p /wine/drive_c/users/${MAMBA_USER}/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x 
+RUN mkdir -p /wine/drive_c/ProgramData/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x 
+RUN mkdir -p /wine/drive_c/users/${MAMBA_USER}/Local\ Settings/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x
+RUN ln -s /home/${MAMBA_USER} /github/home
+
+ 
+# RUN wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command1 /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}\AnyBody.exe\" \"%1\"" && \
+#     mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Local/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+#     mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+#     mkdir -p /wine/drive_c/users/${MAMBA_USER}/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+#     mkdir -p /wine/drive_c/ProgramData/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+#     mkdir -p /wine/drive_c/users/${MAMBA_USER}/Local\ Settings/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+#     ln -s /home/${MAMBA_USER} /github/home
+
+
 
 
 
