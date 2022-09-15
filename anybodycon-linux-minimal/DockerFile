@@ -119,7 +119,8 @@ USER $MAMBA_USER
 RUN winecfg 
 
 
-COPY --from=anybody-build-store --chown=${MAMBA_USER} --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/${ANYBODY_FOLDER}/"]
+#COPY --from=anybody-build-store --chown=${MAMBA_USER} --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/${ANYBODY_FOLDER}/"]
+COPY --from=anybody-build-store --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/${ANYBODY_FOLDER}/"]
 
  
 RUN wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command1 /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\${ANYBODY_FOLDER}\AnyBody.exe\" \"%1\"" && \
