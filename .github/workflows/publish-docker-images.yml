@@ -21,7 +21,7 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  build-and-push-anybodycon-linux-minimal:
+  build-and-push-anybodycon-linux-images:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -68,6 +68,7 @@ jobs:
             ANYBODY_VERSION=7.4
             ANYBODY_PATCH_VERSION=2
             BUILD_NUMBER=1
+            BASE_IMAGE="anybodycon-linux-minimal"
           tags: |
               ghcr.io/anybodycon-linux:7.4.2-1
               ghcr.io/anybodycon-linux:latest
