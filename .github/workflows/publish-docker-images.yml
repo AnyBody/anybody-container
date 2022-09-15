@@ -41,11 +41,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      # - name: Extract metadata (tags, labels) for Docker
+      #   id: meta
+      #   uses: docker/metadata-action@v4
+      #   with:
+      #     images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build and push linux minimal package
         uses: docker/build-push-action@v3
@@ -69,8 +69,8 @@ jobs:
             ANYBODY_PATCH_VERSION=2
             BUILD_NUMBER=1
           tags: |
-              ghcr.io/anybodycon-linux:7.4.2-1
-              ghcr.io/anybodycon-linux:latest
+              ghcr.io/anybody/anybodycon-linux:7.4.2-1
+              ghcr.io/anybody/anybodycon-linux:latest
 
 
   # build-and-push-anybodycon-linux:
