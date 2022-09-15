@@ -9,7 +9,7 @@ ARG BASE_IMAGE="ghcr.io/anybody/anybodycon-linux-minimal"
 FROM ghcr.io/anybody/container-build-store:${ANYBODY_VERSION}.${ANYBODY_PATCH_VERSION} as anybody-build-store
 
 
-FROM ${BASE_IMAGE}:${ANYBODY_VERSION}.{ANYBODY_PATCH_VERSION}-${BUILD_NUMBER}
+FROM ${BASE_IMAGE}:${ANYBODY_VERSION}.${ANYBODY_PATCH_VERSION}-${BUILD_NUMBER}
 
 LABEL org.opencontainers.image.url https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-linux-minimal
 LABEL org.opencontainers.image.title "anybodycon-linux-minimal"
