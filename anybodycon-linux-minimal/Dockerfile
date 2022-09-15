@@ -49,7 +49,7 @@ RUN apt-get update \
     && wget -nc https://dl.winehq.org/wine-builds/debian/dists/${DEBIAN_VERSION}/winehq-${DEBIAN_VERSION}.sources \
     && mv winehq-${DEBIAN_VERSION}.sources /etc/apt/sources.list.d/ 
 # Build a fake wine-stable-i386 deb package so we can install wine without 32 bit
-COPY wine-xxx-i386 /wine-${WINECHANNEL}-i386
+COPY anybodycon-linux-minimal/wine-xxx-i386 /wine-${WINECHANNEL}-i386
 RUN sed -i 's/{{WINEVERSION}}/'${WINEVERSION}'/g' /wine-${WINECHANNEL}-i386 
 RUN sed -i 's/{{WINECHANNEL}}/'${WINECHANNEL}'/g' /wine-${WINECHANNEL}-i386 
 RUN equivs-build /wine-${WINECHANNEL}-i386 \
