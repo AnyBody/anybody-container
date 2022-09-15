@@ -26,6 +26,10 @@ RUN rm /wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSIO
 
 ARG AMS_MKL_DIR=/wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}/AnyBody.MKL-2019.1.144-x64
 ARG AMS_PYTHON_MKL_DIR=/wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}/Python/Library/bin
+
+
+USER root
+
 # The following files are excluded in .dockeringore and we link to 
 # the AnyBody copies to save image size.
 RUN ln "${AMS_MKL_DIR}/mkl_avx2.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_avx2.dll" \
