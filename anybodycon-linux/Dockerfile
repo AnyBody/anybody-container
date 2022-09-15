@@ -33,13 +33,14 @@ RUN ln "${AMS_MKL_DIR}/mkl_avx2.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_avx2.dll" \
 USER $MAMBA_USER
 
 
-RUN micromamba install --yes --name base --channel conda-forge --channel bioconda \
+RUN micromamba install --yes --name base --channel conda-forge --channel bioconda --channel anybody \
       nomkl  \
       snakemake-minimal \
       pandas  \
       pytest  \
       pytest-xdist  \
-      anypytools && \
+      anypytools \
+      pytest-h5compare && \
     micromamba clean --all --yes
 
 
