@@ -52,7 +52,12 @@ jobs:
         with:
           file: anybodycon-linux-minimal/DockerFile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            ANYBODY_VERSION=7.4
+            ANYBODY_PATCH_VERSION=2
+          tags: |
+              ghcr.io/anybodycon-linux-minimal:7.4.2-1
+              ghcr.io/anybodycon-linux-minimal:latest
           labels: ${{ steps.meta.outputs.labels }}
 
   build-and-push-anybodycon-linux:
@@ -83,10 +88,16 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
 
-      - name: Build and push linux minimal package
+      - name: Build and push linux package
         uses: docker/build-push-action@v3
         with:
-          file: anybodycon-linux-minimal/DockerFile
+          file: anybodycon-linux/DockerFile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            ANYBODY_VERSION=7.4
+            ANYBODY_PATCH_VERSION=2
+            BUILD_NUMBER=0
+          tags: |
+              ghcr.io/anybodycon-linux:7.4.2-1
+              ghcr.io/anybodycon-linux:latest
           labels: ${{ steps.meta.outputs.labels }}

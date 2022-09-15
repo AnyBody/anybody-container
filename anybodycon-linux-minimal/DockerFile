@@ -1,8 +1,7 @@
 #syntax=docker/dockerfile:1.4
 
-ARG ANYBODY_VERSION=7.4.2
-ARG ANYBODY_VERSION_SHORT=7.4
-ARG ANYBODY_FOLDER=AnyBody.7.4
+ARG ANYBODY_VERSION=7.4
+ARG ANYBODY_PATCH_VERSION=2
 
 ARG BASE_IMAGE="mambaorg/micromamba"
 ARG ANYBODY_LINUX_MINIMAL="ghcr.io/anybody/anybodycon-linux-minimal"
@@ -30,7 +29,7 @@ ARG DEBIAN_VERSION="bullseye"
 ARG WINEVERSION="4.0.4~bullseye"
 
 ## Configure to use container build store which has the files from AnyBody 
-FROM ghcr.io/anybody/container-build-store:${ANYBODY_VERSION} as anybody-build-store
+FROM ghcr.io/anybody/container-build-store:${ANYBODY_VERSION}.${ANYBODY_PATCH_VERSION} as anybody-build-store
 
 
 # Run an intermediate docker step to get the Wine apt sources/keys, and build 
@@ -40,8 +39,6 @@ ARG WINECHANNEL
 ARG DEBIAN_VERSION
 ARG WINEVERSION
 ARG ANYBODY_VERSION
-ARG ANYBODY_VERSION_SHORT
-ARG ANYBODY_FOLDER
 USER root
 # Get the necessary apt list and keys to install from winehq
 RUN apt-get update \
@@ -63,12 +60,15 @@ RUN equivs-build /wine-${WINECHANNEL}-i386 \
 
 
 FROM ${BASE_IMAGE}:${TAG}
-LABEL org.opencontainers.image.source https://github.com/anybody/anybody-container
+LABEL org.opencontainers.image.url https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-linux-minimal
+LABEL org.opencontainers.image.title "anybodycon-linux-minimal"
+LABEL org.opencontainers.image.description "Minimal image with AnyBody in a linux docker container"
+LABEL org.opencontainers.image.licenses "https://www.anybodytech.com/legal/software-license-agreement/"
+
+
 ARG WINEVERSION
 ARG WINECHANNEL
 ARG ANYBODY_VERSION
-ARG ANYBODY_VERSION_SHORT
-ARG ANYBODY_FOLDER
 
 USER root
 
@@ -110,7 +110,7 @@ ENV RLM_LICENSE_PASSWORD=12345
 
 RUN mkdir -p /github && chown -R $MAMBA_USER: /github && \
     mkdir -p ${WINEPREFIX} && chown -R $MAMBA_USER: $WINEPREFIX && \
-    echo -e '#!/bin/bash\n'"wine /wine/drive_c/Program\ Files/AnyBody\ Technology/${ANYBODY_FOLDER}/AnyBodyCon.exe \"\$@\"\n" > /usr/bin/anybodycon && \
+    echo -e '#!/bin/bash\n'"wine /wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}/AnyBodyCon.exe \"\$@\"\n" > /usr/bin/anybodycon && \
     chmod +x /usr/bin/anybodycon
 
 USER $MAMBA_USER
@@ -119,16 +119,16 @@ USER $MAMBA_USER
 RUN winecfg 
 
 
-COPY --from=anybody-build-store --chown=${MAMBA_USER} --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/${ANYBODY_FOLDER}/"]
-#COPY --from=anybody-build-store --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/${ANYBODY_FOLDER}/"]
+COPY --from=anybody-build-store --chown=${MAMBA_USER} --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}/"]
+#COPY --from=anybody-build-store --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}/"]
 
  
-RUN wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command1 /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\${ANYBODY_FOLDER}\AnyBody.exe\" \"%1\"" && \
-    mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Local/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION_SHORT}.x && \
-    mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION_SHORT}.x && \
-    mkdir -p /wine/drive_c/users/${MAMBA_USER}/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION_SHORT}.x && \
-    mkdir -p /wine/drive_c/ProgramData/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION_SHORT}.x && \
-    mkdir -p /wine/drive_c/users/${MAMBA_USER}/Local\ Settings/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION_SHORT}.x && \
+RUN wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command1 /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}\AnyBody.exe\" \"%1\"" && \
+    mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Local/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+    mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+    mkdir -p /wine/drive_c/users/${MAMBA_USER}/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+    mkdir -p /wine/drive_c/ProgramData/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+    mkdir -p /wine/drive_c/users/${MAMBA_USER}/Local\ Settings/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
     ln -s /home/${MAMBA_USER} /github/home
 
 

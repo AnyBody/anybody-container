@@ -1,27 +1,32 @@
 #syntax=docker/dockerfile:1.4
 
-ARG ANYBODY_VERSION=7.4.2
-ARG ANYBODY_FOLDER=AnyBody.7.4
-ARG BASE_IMAGE="ghcr.io/anybody/anybodycon-linux-minimal"
-ARG TAG=7.4.2-0
+ARG ANYBODY_VERSION 7.4
+ARG ANYBODY_PATCH_VERSION 2
+ARG BUILD_NUMBER 0
 
-FROM ghcr.io/anybody/container-build-store:${ANYBODY_VERSION} as anybody-build-store
+ARG BASE_IMAGE="ghcr.io/anybody/anybodycon-linux-minimal"
+ARG TAG=${ANYBODY_VERSION}.{ANYBODY_PATCH_VERSION}-${BUILD_NUMBER}
+
+FROM ghcr.io/anybody/container-build-store:${ANYBODY_VERSION}.${ANYBODY_PATCH_VERSION} as anybody-build-store
 
 
 FROM ${BASE_IMAGE}:${TAG}
-LABEL org.opencontainers.image.source https://github.com/anybody/anybody-container
-ARG ANYBODY_VERSION
-ARG ANYBODY_FOLDER
 
-COPY --from=anybody-build-store --link --chown=${MAMBA_USER} ["extra" ,  "/wine/drive_c/Program Files/AnyBody Technology/${ANYBODY_FOLDER}/"]
+LABEL org.opencontainers.image.url https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-linux-minimal
+LABEL org.opencontainers.image.title "anybodycon-linux-minimal"
+LABEL org.opencontainers.image.description "Minimal image with AnyBody in a linux docker container"
+LABEL org.opencontainers.image.licenses "https://www.anybodytech.com/legal/software-license-agreement/"
+
+
+COPY --from=anybody-build-store --link --chown=${MAMBA_USER} ["extra" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}/"]
 
 #USER root
 
 # Remove _pth file to allow overwriting PYTHON environment variables etc. 
-RUN rm /wine/drive_c/Program\ Files/AnyBody\ Technology/${ANYBODY_FOLDER}/Python/python37._pth 
+RUN rm /wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}/Python/python37._pth 
 
-ARG AMS_MKL_DIR=/wine/drive_c/Program\ Files/AnyBody\ Technology/${ANYBODY_FOLDER}/AnyBody.MKL-2019.1.144-x64
-ARG AMS_PYTHON_MKL_DIR=/wine/drive_c/Program\ Files/AnyBody\ Technology/${ANYBODY_FOLDER}/Python/Library/bin
+ARG AMS_MKL_DIR=/wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}/AnyBody.MKL-2019.1.144-x64
+ARG AMS_PYTHON_MKL_DIR=/wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}/Python/Library/bin
 # The following files are excluded in .dockeringore and we link to 
 # the AnyBody copies to save image size.
 RUN ln "${AMS_MKL_DIR}/mkl_avx2.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_avx2.dll" \
@@ -47,7 +52,7 @@ RUN micromamba install --yes --name base --channel conda-forge --channel biocond
 
 ENV PYTHONHASHSEED=1234
 
-ENV WINEPATH=C:\\Program\ Files\\AnyBody\ Technology\\${ANYBODY_FOLDER}\\Python;C:\\Program\ Files\\AnyBody\ Technology\\${ANYBODY_FOLDER}\\Python\\Library\\mingw-w64\\bin;C:\\Program\ Files\\AnyBody\ Technology\\${ANYBODY_FOLDER}\\Python\\Library\\usr\\bin;C:\\Program\ Files\\AnyBody\ Technology\\${ANYBODY_FOLDER}\\Python\\Library\\bin;C:\\Program\ Files\\AnyBody\ Technology\\${ANYBODY_FOLDER}\\Python\\Scripts;C:\\Program\ Files\\AnyBody\ Technology\\${ANYBODY_FOLDER}\\Python\\bin;c:\\windows\\system32;c:\\windows;c:\\windows\\system32\\wbem
+ENV WINEPATH=C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}\\Python;C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}\\Python\\Library\\mingw-w64\\bin;C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}\\Python\\Library\\usr\\bin;C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}\\Python\\Library\\bin;C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}\\Python\\Scripts;C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}\\Python\\bin;c:\\windows\\system32;c:\\windows;c:\\windows\\system32\\wbem
 ENV SystemRoot=c:\\windows
 ENV SystemDrive=c:
 
