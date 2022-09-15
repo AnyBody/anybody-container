@@ -91,7 +91,7 @@ jobs:
       - name: Build and push linux package
         uses: docker/build-push-action@v3
         with:
-          file: anybodycon-linux/DockerFile
+          file: anybodycon-linux/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           build-args: |
             ANYBODY_VERSION=7.4
