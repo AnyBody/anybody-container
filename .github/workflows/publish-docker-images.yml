@@ -46,13 +46,13 @@ jobs:
           file: Dockerfile-anybodycon-linux-minimal
           push: ${{ github.event_name != 'pull_request' }}
           build-args: |
-            ANYBODY_VERSION=${{ maxtrix.anybody_version }}
-            ANYBODY_VERSION_PATCH=${{ maxtrix.anybody_version_patch }}
-            ANYBODY_VERSION_SUFFIX=${{ maxtrix.anybody_version_suffix }}
+            ANYBODY_VERSION=${{ matrix.anybody_version }}
+            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
+            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
           tags: |
-              ghcr.io/anybody/anybodycon-linux-minimal:${{ maxtrix.anybody_version }}.${{ maxtrix.anybody_version_patch }}${{ maxtrix.anybody_version_suffix }}-${{ matrix.build_number }}
-              ghcr.io/anybody/anybodycon-linux-minimal:${{ maxtrix.anybody_version }}.${{ maxtrix.anybody_version_patch }}${{ maxtrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-linux-minimal:${{ maxtrix.anybody_version }}${{ maxtrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-linux-minimal:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
+              ghcr.io/anybody/anybodycon-linux-minimal:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-linux-minimal:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-linux-minimal:latest
 
       - name: Build and push linux package
@@ -61,13 +61,13 @@ jobs:
           file: Dockerfile-anybodycon-linux
           push: ${{ github.event_name != 'pull_request' }}
           build-args: |
-            ANYBODY_VERSION=${{ maxtrix.anybody_version }}
-            ANYBODY_VERSION_PATCH=${{ maxtrix.anybody_version_patch }}
-            ANYBODY_VERSION_SUFFIX=${{ maxtrix.anybody_version_suffix }}
+            ANYBODY_VERSION=${{ matrix.anybody_version }}
+            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
+            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
             BUILD_NUMBER=${{ matrix.build_number }}
           tags: |
-              ghcr.io/anybody/anybodycon-linux:${{ maxtrix.anybody_version }}.${{ maxtrix.anybody_version_patch }}${{ maxtrix.anybody_version_suffix }}-${{ matrix.build_number }}
-              ghcr.io/anybody/anybodycon-linux:${{ maxtrix.anybody_version }}.${{ maxtrix.anybody_version_patch }}${{ maxtrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-linux:${{ maxtrix.anybody_version }}${{ maxtrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-linux:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
+              ghcr.io/anybody/anybodycon-linux:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-linux:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-linux:latest
 
