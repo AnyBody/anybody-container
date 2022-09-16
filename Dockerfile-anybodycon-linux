@@ -10,6 +10,7 @@ FROM ghcr.io/anybody/container-build-store:${ANYBODY_VERSION}.${ANYBODY_PATCH_VE
 
 
 FROM ${BASE_IMAGE}:${ANYBODY_VERSION}.${ANYBODY_PATCH_VERSION}-${BUILD_NUMBER}
+ARG ANYBODY_VERSION
 
 LABEL org.opencontainers.image.url https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-linux-minimal
 LABEL org.opencontainers.image.title "anybodycon-linux-minimal"
