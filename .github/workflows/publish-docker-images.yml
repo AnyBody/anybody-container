@@ -1,4 +1,4 @@
-name: Create and publish a Docker image
+name: Build and push AnyBodyCon linux images
 
 on:
   push:
@@ -9,7 +9,8 @@ on:
 
 
 jobs:
-  build-and-push-anybodycon-linux-images:
+  create-images:
+    name: Images for AnyBody ${{maxtrix.anybody_version}}.${{maxtrix.anybody_version_patch}}${{maxtrix.anybody_version_suffix}}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -40,7 +41,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
 
-      - name: Build and push linux minimal package
+      - name: Build and push minimal image
         uses: docker/build-push-action@v3
         with:
           file: Dockerfile-anybodycon-linux-minimal
@@ -55,7 +56,7 @@ jobs:
               ghcr.io/anybody/anybodycon-linux-minimal:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-linux-minimal:latest
 
-      - name: Build and push linux package
+      - name: Build and push full image
         uses: docker/build-push-action@v3
         with:
           file: Dockerfile-anybodycon-linux
