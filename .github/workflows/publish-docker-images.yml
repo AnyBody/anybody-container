@@ -11,7 +11,7 @@ on:
 env:
   ANYBODY_VERSION: 7.4
   ANYBODY_PATCH_VERSION: 2
-  BUILD_NUMBER: 0
+  BUILD_NUMBER: 1
 
 
 
@@ -52,6 +52,8 @@ jobs:
             ANYBODY_PATCH_VERSION=${{ env.ANYBODY_PATCH_VERSION }}
           tags: |
               ghcr.io/anybody/anybodycon-linux-minimal:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_PATCH_VERSION }}-${{ env.BUILD_NUMBER }}
+              ghcr.io/anybody/anybodycon-linux-minimal:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_PATCH_VERSION }}
+              ghcr.io/anybody/anybodycon-linux-minimal:${{ env.ANYBODY_VERSION }}
               ghcr.io/anybody/anybodycon-linux-minimal:latest
 
       - name: Build and push linux package
@@ -65,5 +67,7 @@ jobs:
             BUILD_NUMBER=${{ env.BUILD_NUMBER }}
           tags: |
               ghcr.io/anybody/anybodycon-linux:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_PATCH_VERSION }}-${{ env.BUILD_NUMBER }}
+              ghcr.io/anybody/anybodycon-linux:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_PATCH_VERSION }}
+              ghcr.io/anybody/anybodycon-linux:${{ env.ANYBODY_VERSION }}
               ghcr.io/anybody/anybodycon-linux:latest
 
