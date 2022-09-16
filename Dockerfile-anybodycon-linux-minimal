@@ -1,7 +1,8 @@
 #syntax=docker/dockerfile:1.4
 
 ARG ANYBODY_VERSION=7.4
-ARG ANYBODY_PATCH_VERSION=2
+ARG ANYBODY_VERSION_PATCH=2
+ARG ANYBODY_VERSION_SUFFIX=""
 
 ARG BASE_IMAGE="mambaorg/micromamba"
 
@@ -28,7 +29,7 @@ ARG DEBIAN_VERSION="bullseye"
 ARG WINEVERSION="4.0.4~bullseye"
 
 ## Configure to use container build store which has the files from AnyBody 
-FROM ghcr.io/anybody/container-build-store:${ANYBODY_VERSION}.${ANYBODY_PATCH_VERSION} as anybody-build-store
+FROM ghcr.io/anybody/container-build-store:${ANYBODY_VERSION}.${ANYBODY_VERSION_PATCH}${ANYBODY_VERSION_SUFFIX} as anybody-build-store
 
 
 # Run an intermediate docker step to get the Wine apt sources/keys, and build 
@@ -38,6 +39,8 @@ ARG WINECHANNEL
 ARG DEBIAN_VERSION
 ARG WINEVERSION
 ARG ANYBODY_VERSION
+ARG ANYBODY_VERSION_SUFFIX
+
 USER root
 # Get the necessary apt list and keys to install from winehq
 RUN apt-get update \
@@ -109,7 +112,7 @@ ENV RLM_LICENSE_PASSWORD=12345
 
 RUN mkdir -p /github && chown -R $MAMBA_USER: /github && \
     mkdir -p ${WINEPREFIX} && chown -R $MAMBA_USER: $WINEPREFIX && \
-    echo -e '#!/bin/bash\n'"wine /wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}/AnyBodyCon.exe \"\$@\"\n" > /usr/bin/anybodycon && \
+    echo -e '#!/bin/bash\n'"wine /wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBodyCon.exe \"\$@\"\n" > /usr/bin/anybodycon && \
     chmod +x /usr/bin/anybodycon
 
 USER ${MAMBA_USER}
@@ -118,12 +121,12 @@ USER ${MAMBA_USER}
 RUN winecfg 
 
 
-COPY --from=anybody-build-store --chown=${MAMBA_USER} --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}/"]
-#COPY --from=anybody-build-store --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}/"]
+COPY --from=anybody-build-store --chown=${MAMBA_USER} --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
+#COPY --from=anybody-build-store --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
 
  
 
-RUN wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command1 /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}\AnyBody.exe\" \"%1\"" && \
+RUN wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command1 /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\AnyBody.exe\" \"%1\"" && \
     mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Local/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
     mkdir -p /wine/drive_c/users/${MAMBA_USER}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
     mkdir -p /wine/drive_c/users/${MAMBA_USER}/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
