@@ -10,7 +10,6 @@ on:
 
 jobs:
   create-images:
-    name: Images for AnyBody ${{maxtrix.anybody_version}}.${{maxtrix.anybody_version_patch}}${{maxtrix.anybody_version_suffix}}
     runs-on: ubuntu-latest
     permissions:
       contents: read
