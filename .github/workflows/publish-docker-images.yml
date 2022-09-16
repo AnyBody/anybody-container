@@ -10,6 +10,7 @@ on:
 
 jobs:
   create-images:
+    name: Linux image for AnyBody.${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
