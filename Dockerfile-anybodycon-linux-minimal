@@ -49,7 +49,7 @@ RUN apt-get update \
     && wget -nc https://dl.winehq.org/wine-builds/winehq.key \
     && mv winehq.key /usr/share/keyrings/winehq-archive.key \
     && mkdir -pm755 /etc/apt/keyrings \
-    && cp /usr/share/keyrings/winehq-archive.key /etc/apt/keyrings/winehq-archive.key \
+    && mv /usr/share/keyrings/winehq-archive.key /etc/apt/keyrings/winehq-archive.key \
     && wget -nc https://dl.winehq.org/wine-builds/debian/dists/${DEBIAN_VERSION}/winehq-${DEBIAN_VERSION}.sources \
     && mv winehq-${DEBIAN_VERSION}.sources /etc/apt/sources.list.d/ 
 # Build a fake wine-stable-i386 deb package so we can install wine without 32 bit
