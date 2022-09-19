@@ -1,4 +1,4 @@
-name: Create and publish a Docker image
+name: Build and push AnyBodyCon linux images
 
 on:
   push:
@@ -8,21 +8,25 @@ on:
       - 'main'
 
 
-env:
-  ANYBODY_VERSION: 7.4
-  ANYBODY_PATCH_VERSION: 2
-  BUILD_NUMBER: 1
-
-
-
 jobs:
-  build-and-push-anybodycon-linux-images:
+  create-images:
+    name: Linux images for AnyBody.${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    env:
-      IMAGE_NAME: anybodycon-linux-minimal
+    
+    strategy:
+      matrix:
+        include:
+          - anybody_version: 7.4
+            anybody_version_patch: 2
+            anybody_version_suffix: ""
+            build_number: 1
+          - anybody_version: 7.5
+            anybody_version_patch: 0
+            anybody_version_suffix: "_Beta"
+            build_number: 1
 
     steps:
       - name: Checkout repository
@@ -36,38 +40,35 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Extract metadata (tags, labels) for Docker
-      #   id: meta
-      #   uses: docker/metadata-action@v4
-      #   with:
-      #     images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build and push linux minimal package
+      - name: Build and push minimal image
         uses: docker/build-push-action@v3
         with:
           file: Dockerfile-anybodycon-linux-minimal
           push: ${{ github.event_name != 'pull_request' }}
           build-args: |
-            ANYBODY_VERSION=${{ env.ANYBODY_VERSION }}
-            ANYBODY_PATCH_VERSION=${{ env.ANYBODY_PATCH_VERSION }}
+            ANYBODY_VERSION=${{ matrix.anybody_version }}
+            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
+            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
           tags: |
-              ghcr.io/anybody/anybodycon-linux-minimal:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_PATCH_VERSION }}-${{ env.BUILD_NUMBER }}
-              ghcr.io/anybody/anybodycon-linux-minimal:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_PATCH_VERSION }}
-              ghcr.io/anybody/anybodycon-linux-minimal:${{ env.ANYBODY_VERSION }}
+              ghcr.io/anybody/anybodycon-linux-minimal:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
+              ghcr.io/anybody/anybodycon-linux-minimal:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-linux-minimal:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-linux-minimal:latest
 
-      - name: Build and push linux package
+      - name: Build and push full image
         uses: docker/build-push-action@v3
         with:
           file: Dockerfile-anybodycon-linux
           push: ${{ github.event_name != 'pull_request' }}
           build-args: |
-            ANYBODY_VERSION=${{ env.ANYBODY_VERSION }}
-            ANYBODY_PATCH_VERSION=${{ env.ANYBODY_PATCH_VERSION }}
-            BUILD_NUMBER=${{ env.BUILD_NUMBER }}
+            ANYBODY_VERSION=${{ matrix.anybody_version }}
+            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
+            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
+            BUILD_NUMBER=${{ matrix.build_number }}
           tags: |
-              ghcr.io/anybody/anybodycon-linux:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_PATCH_VERSION }}-${{ env.BUILD_NUMBER }}
-              ghcr.io/anybody/anybodycon-linux:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_PATCH_VERSION }}
-              ghcr.io/anybody/anybodycon-linux:${{ env.ANYBODY_VERSION }}
+              ghcr.io/anybody/anybodycon-linux:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
+              ghcr.io/anybody/anybodycon-linux:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-linux:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-linux:latest
 
