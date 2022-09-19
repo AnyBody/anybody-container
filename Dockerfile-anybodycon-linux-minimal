@@ -40,6 +40,7 @@ ARG DEBIAN_VERSION
 ARG WINEVERSION
 ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
+ARG ANYBODY_VERSION_PATCH
 
 USER root
 # Get the necessary apt list and keys to install from winehq
@@ -73,6 +74,9 @@ LABEL org.opencontainers.image.licenses "https://www.anybodytech.com/legal/softw
 ARG WINEVERSION
 ARG WINECHANNEL
 ARG ANYBODY_VERSION
+ARG ANYBODY_VERSION_SUFFIX
+ARG ANYBODY_VERSION_PATCH
+
 
 USER root
 
