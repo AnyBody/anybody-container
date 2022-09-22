@@ -63,6 +63,8 @@ ENV WINEPATH=C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}
 ENV SystemRoot=c:\\windows
 ENV SystemDrive=c:
 
+ENV PATH "$MAMBA_ROOT_PREFIX/bin:$PATH"
+
 # WORKDIR $HOME
 
 
