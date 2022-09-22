@@ -54,7 +54,7 @@ jobs:
               ghcr.io/anybody/anybodycon-linux-minimal:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
               ghcr.io/anybody/anybodycon-linux-minimal:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-linux-minimal:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-linux-minimal:latest
+              ghcr.io/anybody/anybodycon-linux-minimal:latest${{anybody_version_suffix}}
 
       - name: Build and push full image
         uses: docker/build-push-action@v3
@@ -70,5 +70,5 @@ jobs:
               ghcr.io/anybody/anybodycon-linux:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
               ghcr.io/anybody/anybodycon-linux:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-linux:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-linux:latest
+              ghcr.io/anybody/anybodycon-linux:latest${{anybody_version_suffix}}
 
