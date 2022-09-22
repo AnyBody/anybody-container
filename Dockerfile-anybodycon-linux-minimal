@@ -97,7 +97,7 @@ RUN usermod -u 1001 $MAMBA_USER && \
 #     apt-get update && \
 #     apt-get install --no-install-recommends --no-upgrade -y tzdata
 
-ENV WINEPREFIX=~/wine
+#ENV WINEPREFIX=/home/$USER/wine
 
 
 COPY --from=build-base /tmp/wine-${WINECHANNEL}-i386_${WINEVERSION}_all.deb /tmp/
@@ -123,8 +123,8 @@ ENV RLM_LICENSE_PASSWORD=12345
 
 
 RUN mkdir -p /github && chown -R $MAMBA_USER: /github && \
-    mkdir -p /home/${MAMBA_USER}/wine && chown -R $MAMBA_USER: /home/${MAMBA_USER}/wine && \
-    echo -e '#!/bin/bash\n'"wine ~/wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBodyCon.exe \"\$@\"\n" > /usr/bin/anybodycon && \
+    mkdir -p /home/${MAMBA_USER}/.wine && chown -R $MAMBA_USER: /home/${MAMBA_USER}/.wine && \
+    echo -e '#!/bin/bash\n'"wine ~/.wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBodyCon.exe \"\$@\"\n" > /usr/bin/anybodycon && \
     chmod +x /usr/bin/anybodycon
 
 USER ${MAMBA_USER}
@@ -133,27 +133,27 @@ USER ${MAMBA_USER}
 RUN winecfg 
 
 
-COPY --from=anybody-build-store --chown=${MAMBA_USER} --link ["minimal" ,  "/home/${MAMBA_USER}/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
-#COPY --from=anybody-build-store --link ["minimal" ,  "/home/${MAMBA_USER}/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
+COPY --from=anybody-build-store --chown=${MAMBA_USER} --link ["minimal" ,  "/home/${MAMBA_USER}/.wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
+#COPY --from=anybody-build-store --link ["minimal" ,  "/home/${MAMBA_USER}/.wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
 
  
 
 RUN wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command1 /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\AnyBody.exe\" \"%1\"" && \
-    mkdir -p /home/${MAMBA_USER}/wine/drive_c/users/${MAMBA_USER}/AppData/Local/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    mkdir -p /home/${MAMBA_USER}/wine/drive_c/users/${MAMBA_USER}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    mkdir -p /home/${MAMBA_USER}/wine/drive_c/users/${MAMBA_USER}/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    mkdir -p /home/${MAMBA_USER}/wine/drive_c/ProgramData/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    mkdir -p /home/${MAMBA_USER}/wine/drive_c/users/${MAMBA_USER}/Local\ Settings/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+    mkdir -p /home/${MAMBA_USER}/.wine/drive_c/users/${MAMBA_USER}/AppData/Local/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+    mkdir -p /home/${MAMBA_USER}/.wine/drive_c/users/${MAMBA_USER}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+    mkdir -p /home/${MAMBA_USER}/.wine/drive_c/users/${MAMBA_USER}/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+    mkdir -p /home/${MAMBA_USER}/.wine/drive_c/ProgramData/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+    mkdir -p /home/${MAMBA_USER}/.wine/drive_c/users/${MAMBA_USER}/Local\ Settings/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
     ln -s /home/${MAMBA_USER} /github/home
 
 
 # Ensure that root can also use wine
 USER root
-RUN cp -R /home/${MAMBA_USER}/wine/drive_c/users/mambauser /home/${MAMBA_USER}/wine/drive_c/users/root && \
-    chown -R root /home/${MAMBA_USER}/drive_c/users/root && \
-    mkdir /root/wine && \
-    ln -s /home/${MAMBA_USER}/wine/dosdevices /root/wine/dosdevices && \
-    ln -s /home/${MAMBA_USER}/wine/drive_c /root/wine/drive_c
+RUN cp -R /home/${MAMBA_USER}/.wine/drive_c/users/mambauser /home/${MAMBA_USER}/.wine/drive_c/users/root && \
+    chown -R root /home/${MAMBA_USER}/.wine/drive_c/users/root && \
+    mkdir /root/.wine && \
+    ln -s /home/${MAMBA_USER}/.wine/dosdevices /root/.wine/dosdevices && \
+    ln -s /home/${MAMBA_USER}/.wine/drive_c /root/.wine/drive_c
 
 
 USER ${MAMBA_USER}
