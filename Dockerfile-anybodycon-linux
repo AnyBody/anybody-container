@@ -21,15 +21,15 @@ LABEL org.opencontainers.image.description "Minimal image with AnyBody in a linu
 LABEL org.opencontainers.image.licenses "https://www.anybodytech.com/legal/software-license-agreement/"
 
 
-COPY --from=anybody-build-store --link --chown=${MAMBA_USER} ["extra" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
+COPY --from=anybody-build-store --link --chown=${MAMBA_USER} ["extra" ,  "/home/${MAMBA_USER}/.wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
 
 #USER root
 
 # Remove _pth file to allow overwriting PYTHON environment variables etc. 
-RUN rm /wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/Python/python37._pth 
+RUN rm /home/${MAMBA_USER}/.wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/Python/python37._pth 
 
-ARG AMS_MKL_DIR=/wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBody.MKL-2019.1.144-x64
-ARG AMS_PYTHON_MKL_DIR=/wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/Python/Library/bin
+ARG AMS_MKL_DIR=/home/${MAMBA_USER}/.wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBody.MKL-2019.1.144-x64
+ARG AMS_PYTHON_MKL_DIR=/home/${MAMBA_USER}/.wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/Python/Library/bin
 
 
 USER root
