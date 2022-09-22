@@ -22,11 +22,11 @@ jobs:
           - anybody_version: 7.4
             anybody_version_patch: 2
             anybody_version_suffix: ""
-            build_number: 2
+            build_number: 3
           - anybody_version: 7.5
             anybody_version_patch: 0
             anybody_version_suffix: "_Beta"
-            build_number: 2
+            build_number: 3
 
     steps:
       - name: Checkout repository
