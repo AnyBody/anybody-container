@@ -129,16 +129,19 @@ RUN mkdir -p /github && chown -R $MAMBA_USER: /github && \
 
 USER ${MAMBA_USER}
  
-
-RUN winecfg 
+ 
+RUN WINEPREFIX=/home/${MAMBA_USER}/.wine winecfg 
 
 
 COPY --from=anybody-build-store --chown=${MAMBA_USER} --link ["minimal" ,  "/home/${MAMBA_USER}/.wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
 #COPY --from=anybody-build-store --link ["minimal" ,  "/home/${MAMBA_USER}/.wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
 
- 
 
-RUN wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command1 /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\AnyBody.exe\" \"%1\"" && \
+
+RUN /opt/wine-stable/bin/wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\AnyBody.exe\" \"%1\"" && \
+    sleep 5 && \
+    /opt/wine-stable/bin/wine reg add "HKLM\\SOFTWARE\\AnyBody Technology\\AnyBody.${ANYBODY_VERSION} (64-bit)${ANYBODY_VERSION_SUFFIX/_/ }" /v "InstallDir" /t REG_SZ /d "C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}" && \
+    sleep 5 && \
     mkdir -p /home/${MAMBA_USER}/.wine/drive_c/users/${MAMBA_USER}/AppData/Local/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
     mkdir -p /home/${MAMBA_USER}/.wine/drive_c/users/${MAMBA_USER}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
     mkdir -p /home/${MAMBA_USER}/.wine/drive_c/users/${MAMBA_USER}/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
@@ -147,13 +150,19 @@ RUN wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command1 /v "" /t REG_SZ 
     ln -s /home/${MAMBA_USER} /github/home
 
 
-# Ensure that root can also use wine
+ 
+# # Ensure that root can also use wine
 USER root
 RUN cp -R /home/${MAMBA_USER}/.wine/drive_c/users/mambauser /home/${MAMBA_USER}/.wine/drive_c/users/root && \
     chown -R root /home/${MAMBA_USER}/.wine/drive_c/users/root && \
     mkdir /root/.wine && \
     ln -s /home/${MAMBA_USER}/.wine/dosdevices /root/.wine/dosdevices && \
-    ln -s /home/${MAMBA_USER}/.wine/drive_c /root/.wine/drive_c
+    ln -s /home/${MAMBA_USER}/.wine/drive_c /root/.wine/drive_c && \
+    cp  /home/${MAMBA_USER}/.wine/system.reg /root/.wine/system.reg && \
+    cp  /home/${MAMBA_USER}/.wine/user.reg /root/.wine/user.reg && \
+    chown root /root/.wine/user.reg && \
+    chown root /root/.wine/system.reg && \
+    WINEPREFIX=/root/.wine winecfg 
 
 
 USER ${MAMBA_USER}
