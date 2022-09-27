@@ -39,43 +39,43 @@ USER root
 RUN ln "${AMS_MKL_DIR}/mkl_avx2.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_avx2.dll" \
    && ln "${AMS_MKL_DIR}/mkl_avx512.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_avx512.dll" \
    && ln "${AMS_MKL_DIR}/mkl_core.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_core.dll" \
-   && ln "${AMS_MKL_DIR}/mkl_intel_thread.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_intel_thread.dll"
+   && ln "${AMS_MKL_DIR}/mkl_intel_thread.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_intel_thread.dll" \
+   && apt-get update \
+   && apt-get install -y --no-install-recommends --no-upgrade git \
+   && apt autoremove -y \
+   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
 USER $MAMBA_USER
 
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends --no-upgrade git \
-    && apt autoremove -y \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    micromamba install --yes --name base --channel conda-forge --channel bioconda --channel anybody \
-      nomkl  \
-      snakemake-minimal \
-      pandas  \
-      pytest  \
-      pytest-xdist  \
-      anypytools \
-      pytest-h5compare && \
-    micromamba clean --all --yes && \
-    cd /opt/conda && \
-    find -name '*.a' -delete && \
-    rm -rf ./include && \
-    rm ./lib/libpython3.10.so.1.0 && \
-    find -name '__pycache__' -type d -exec rm -rf '{}' '+' && \
-    rm -rf  ./lib/python3.10/idlelib ./lib/python3.10/ensurepip \
-       ./lib/libasan.so.5.0.0 \
-       ./lib/libtsan.so.0.0.0 \
-       ./lib/liblsan.so.0.0.0 \
-       ./lib/libubsan.so.1.0.0 \
-       ./bin/x86_64-conda-linux-gnu-ld \
-       ./bin/sqlite* \
-       ./share/terminfo && \
-    find ./lib/python3.10/site-packages/scipy -name 'tests' -type d -exec rm -rf '{}' '+' && \
-    find ./lib/python3.10/site-packages/numpy -name 'tests' -type d -exec rm -rf '{}' '+' && \
-    find ./lib/python3.10/site-packages/pandas -name 'tests' -type d -exec rm -rf '{}' '+' && \
-    find ./lib/python3.10/site-packages -name '*.pyx' -delete && \
-    rm -rf ./lib/python3.10/site-packages/uvloop/loop.c
+RUN micromamba install --yes --name base --channel conda-forge --channel bioconda --channel anybody \
+   nomkl  \
+   snakemake-minimal \
+   pandas  \
+   pytest  \
+   pytest-xdist  \
+   anypytools \
+   pytest-h5compare && \
+   micromamba clean --all --yes && \
+   cd /opt/conda && \
+   find -name '*.a' -delete && \
+   rm -rf ./include && \
+   rm ./lib/libpython3.10.so.1.0 && \
+   find -name '__pycache__' -type d -exec rm -rf '{}' '+' && \
+   rm -rf  ./lib/python3.10/idlelib ./lib/python3.10/ensurepip \
+      ./lib/libasan.so.5.0.0 \
+      ./lib/libtsan.so.0.0.0 \
+      ./lib/liblsan.so.0.0.0 \
+      ./lib/libubsan.so.1.0.0 \
+      ./bin/x86_64-conda-linux-gnu-ld \
+      ./bin/sqlite* \
+      ./share/terminfo && \
+   find ./lib/python3.10/site-packages/scipy -name 'tests' -type d -exec rm -rf '{}' '+' && \
+   find ./lib/python3.10/site-packages/numpy -name 'tests' -type d -exec rm -rf '{}' '+' && \
+   find ./lib/python3.10/site-packages/pandas -name 'tests' -type d -exec rm -rf '{}' '+' && \
+   find ./lib/python3.10/site-packages -name '*.pyx' -delete && \
+   rm -rf ./lib/python3.10/site-packages/uvloop/loop.c
 
 
 ENV PYTHONHASHSEED=1234
