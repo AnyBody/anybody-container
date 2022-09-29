@@ -55,14 +55,15 @@ RUN micromamba install --yes --name base --channel conda-forge --channel biocond
    pandas  \
    pytest  \
    pytest-xdist  \
+   pytest-order \
    anypytools \
    pytest-h5compare && \
    micromamba clean --all --yes && \
    cd /opt/conda && \
-   find -name '*.a' -delete && \
+   #find -name '*.a' -delete && \
    rm -rf ./include && \
    rm ./lib/libpython3.10.so.1.0 && \
-   find -name '__pycache__' -type d -exec rm -rf '{}' '+' && \
+   #find -name '__pycache__' -type d -exec rm -rf '{}' '+' && \
    rm -rf  ./lib/python3.10/idlelib ./lib/python3.10/ensurepip \
       ./lib/libasan.so.5.0.0 \
       ./lib/libtsan.so.0.0.0 \
