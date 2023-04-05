@@ -20,7 +20,7 @@ jobs:
       matrix:
         include:
           - anybody_version: 7.4
-            anybody_version_patch: 3
+            anybody_version_patch: 4
             anybody_version_suffix: ""
             build_number: 0
           - anybody_version: 7.5
