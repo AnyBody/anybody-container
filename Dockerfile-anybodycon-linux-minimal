@@ -134,7 +134,6 @@ RUN WINEPREFIX=/wine winecfg
 
 
 COPY --from=anybody-build-store --chown=${MAMBA_USER} --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
-#COPY --from=anybody-build-store --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
 
 
 
