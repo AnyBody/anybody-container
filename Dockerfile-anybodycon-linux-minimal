@@ -23,7 +23,7 @@ ARG BASE_IMAGE="mambaorg/micromamba"
 # ARG DEBIAN_VERSION="buster"
 # ARG WINEVERSION="2.0.4~buster"
 
-ARG TAG="git-7de8286-bullseye-slim"
+ARG TAG="git-7e915c1-bullseye-slim"
 ARG WINECHANNEL="stable"
 ARG DEBIAN_VERSION="bullseye"
 ARG WINEVERSION="4.0.4~bullseye"
