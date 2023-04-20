@@ -125,7 +125,7 @@ ENV RLM_LICENSE_PASSWORD=12345
 RUN mkdir -p /github && chown -R $MAMBA_USER: /github && \
     mkdir -p /wine && chown -R $MAMBA_USER: /wine && \
     echo -e '#!/bin/bash\nwine $WINEPREFIX'"/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBodyCon.exe \"\$@\"\n" > /usr/bin/anybodycon && \
-    chmod +x /usr/bin/anybodycon
+    chmod +x /usr/bin/anybodycon && chown -R $MAMBA_USER: /usr/bin/anybodycon
 
 USER ${MAMBA_USER}
  
