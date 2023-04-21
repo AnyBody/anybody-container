@@ -77,11 +77,22 @@ ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
 ARG ANYBODY_VERSION_PATCH
 
+ARG NEW_MAMBA_USER=anybodyuser
+ARG NEW_MAMBA_USER_ID=1001
+ARG NEW_MAMBA_USER_GID=121
+
+
 # Change the default uid:gid to be easily compatible with github actions
 USER root
-RUN usermod -u 1001 $MAMBA_USER && \
-    groupmod -g 121 $MAMBA_USER && \
-    chown -R 1001:121 /home/$MAMBA_USER
+RUN usermod "--login=${NEW_MAMBA_USER}" "--home=/home/${NEW_MAMBA_USER}" \
+        --move-home "-u ${NEW_MAMBA_USER_ID}" "${MAMBA_USER}" && \
+    groupmod "--new-name=${NEW_MAMBA_USER}" \
+             "-g ${NEW_MAMBA_USER_GID}" "${MAMBA_USER}" && \
+    # Update the expected value of MAMBA_USER for the
+    # _entrypoint.sh consistency check.
+    echo "${NEW_MAMBA_USER}" > "/etc/arg_mamba_user" && \
+    :
+ENV MAMBA_USER=$NEW_MAMBA_USER
 
 
 
@@ -152,7 +163,7 @@ RUN /opt/wine-stable/bin/wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\comm
  
 # # Ensure that root can also use wine
 USER root
-RUN cp -R /wine/drive_c/users/mambauser /wine/drive_c/users/root && \
+RUN cp -R /wine/drive_c/users/anybodyuser /wine/drive_c/users/root && \
     chown -R root /wine/drive_c/users/root && \
     mkdir /rootwine && \
     ln -s /wine/dosdevices /rootwine/dosdevices && \
