@@ -16,8 +16,8 @@ ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
 
 LABEL org.opencontainers.image.url https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-linux-minimal
-LABEL org.opencontainers.image.title "anybodycon-linux-minimal"
-LABEL org.opencontainers.image.description "Minimal image with AnyBody in a linux docker container"
+LABEL org.opencontainers.image.title "anybodycon-linux"
+LABEL org.opencontainers.image.description "Image with AnyBody in a linux docker container"
 LABEL org.opencontainers.image.licenses "https://www.anybodytech.com/legal/software-license-agreement/"
 
 
