@@ -83,8 +83,8 @@ jobs:
             ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
             BUILD_NUMBER=${{ matrix.build_number }}
           tags: |
-              ghcr.io/anybody/anybodycon-linux-gihub-actions:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
-              ghcr.io/anybody/anybodycon-linux-gihub-actions:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-linux-gihub-actions:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-linux-gihub-actions:latest${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-linux-github-actions:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
+              ghcr.io/anybody/anybodycon-linux-github-actions:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-linux-github-actions:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-linux-github-actions:latest${{ matrix.anybody_version_suffix }}
 
