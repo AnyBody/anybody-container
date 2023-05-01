@@ -151,7 +151,7 @@ jobs:
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
             ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
             BUILD_NUMBER=${{ matrix.build_number }}
-            BASE_IMAGE="ghcr.io/anybody/anybodycon-slim-devcontainer"
+            BASE_IMAGE=ghcr.io/anybody/anybodycon-slim-devcontainer
             ANYBODY_USER=codespace
           tags: |
               ghcr.io/anybody/anybodycon-devcontainer:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
