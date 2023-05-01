@@ -1,0 +1,80 @@
+#syntax=docker/dockerfile:1.4
+
+ARG ANYBODY_VERSION=7.4
+ARG ANYBODY_VERSION_PATCH=4
+ARG ANYBODY_VERSION_SUFFIX=""
+ARG BUILD_NUMBER=0
+
+ARG BASE_IMAGE="ghcr.io/anybody/anybodycon-slim"
+ARG TAG=${ANYBODY_VERSION}.${ANYBODY_VERSION_PATCH}${ANYBODY_VERSION_SUFFIX}-${BUILD_NUMBER}
+
+FROM mambaorg/micromamba:1.4.2 as micromamba
+
+
+
+FROM ${BASE_IMAGE}:${TAG}
+ARG ANYBODY_VERSION
+ARG ANYBODY_VERSION_PATCH
+ARG ANYBODY_VERSION_SUFFIX
+
+LABEL org.opencontainers.image.url https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-slim-micromamba
+LABEL org.opencontainers.image.title "anybodycon-slim-micromamba"
+LABEL org.opencontainers.image.description "Image with AnyBody in a linux docker container and micromamba python"
+LABEL org.opencontainers.image.licenses "https://www.anybodytech.com/legal/software-license-agreement/"
+
+
+USER root
+
+# if your image defaults to a non-root user, then you may want to make the
+# next 3 ARG commands match the values in your image. You can get the values
+# by running: docker run --rm -it my/image id -a
+ARG MAMBA_USER=anybodyuser
+ARG MAMBA_USER_ID=1000
+ARG MAMBA_USER_GID=1000
+ENV MAMBA_USER=$MAMBA_USER
+ENV MAMBA_ROOT_PREFIX="/opt/conda"
+ENV MAMBA_EXE="/bin/micromamba"
+
+COPY --from=micromamba "$MAMBA_EXE" "$MAMBA_EXE"
+COPY --from=micromamba /usr/local/bin/_activate_current_env.sh /usr/local/bin/_activate_current_env.sh
+COPY --from=micromamba /usr/local/bin/_dockerfile_shell.sh /usr/local/bin/_dockerfile_shell.sh
+COPY --from=micromamba /usr/local/bin/_entrypoint.sh /usr/local/bin/_entrypoint.sh
+COPY --from=micromamba /usr/local/bin/_activate_current_env.sh /usr/local/bin/_activate_current_env.sh
+COPY --from=micromamba /usr/local/bin/_dockerfile_initialize_user_accounts.sh /usr/local/bin/_dockerfile_initialize_user_accounts.sh
+COPY --from=micromamba /usr/local/bin/_dockerfile_setup_root_prefix.sh /usr/local/bin/_dockerfile_setup_root_prefix.sh
+
+RUN /usr/local/bin/_dockerfile_initialize_user_accounts.sh && \
+    /usr/local/bin/_dockerfile_setup_root_prefix.sh
+
+# Ensure root has correct WINEPREFIX
+RUN sed -i '2i if [ $(id -u) = 0 ]; then export WINEPREFIX=/rootwine; fi' /usr/local/bin/_entrypoint.sh && \
+    sed -i '2i if [ $(id -u) = 0 ]; then export WINEPREFIX=/rootwine; fi' /usr/local/bin/_dockerfile_shell.sh
+
+
+USER $MAMBA_USER
+
+# Update bashrc
+RUN echo "source /usr/local/bin/_activate_current_env.sh" >> ~/.bashrc
+
+SHELL ["/usr/local/bin/_dockerfile_shell.sh"]
+
+ENTRYPOINT ["/usr/local/bin/_entrypoint.sh"]
+# Optional: if you want to customize the ENTRYPOINT and have a conda
+# environment activated, then do this:
+# ENTRYPOINT ["/usr/local/bin/_entrypoint.sh", "my_entrypoint_program"]
+
+# You can modify the CMD statement as needed....
+CMD ["/bin/bash"]
+
+# Optional: you can now populate a conda environment:
+# RUN micromamba install --yes --name base --channel conda-forge \
+#       jq && \
+#     micromamba clean --all --yes
+
+
+# ENV PATH "$ANYBODY_ROOT_PREFIX/bin:$PATH"
+
+
+# WORKDIR $HOME
+
+
