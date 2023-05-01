@@ -20,6 +20,7 @@ FROM ghcr.io/anybody/container-build-store:${ANYBODY_VERSION}.${ANYBODY_VERSION_
 # a dummy wine-stable-i386 package to shawdows the 32bit dependency.
 FROM ${BASE_IMAGE}:${TAG} AS build-base
 ARG WINECHANNEL
+ARG DISTRO
 ARG DISTRO_VERSION
 ARG WINEVERSION
 ARG ANYBODY_VERSION
