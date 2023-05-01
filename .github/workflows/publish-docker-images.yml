@@ -22,11 +22,11 @@ jobs:
           - anybody_version: 7.4
             anybody_version_patch: 4
             anybody_version_suffix: ""
-            build_number: 3
+            build_number: 0
           - anybody_version: 7.5
             anybody_version_patch: 0
             anybody_version_suffix: "_Beta"
-            build_number: 14
+            build_number: 0
 
     steps:
       - name: Checkout repository
@@ -41,25 +41,25 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
 
-      - name: Build and push minimal image
+      - name: Build and push AnyBodyCon Slim image
         uses: docker/build-push-action@v3
         with:
-          file: Dockerfile-anybodycon-linux-minimal
+          file: Dockerfile-anybodycon-slim
           push: ${{ github.event_name != 'pull_request' }}
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
             ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
           tags: |
-              ghcr.io/anybody/anybodycon-linux-minimal:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
-              ghcr.io/anybody/anybodycon-linux-minimal:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-linux-minimal:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-linux-minimal:latest${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-slim:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
+              ghcr.io/anybody/anybodycon-slim:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-slim:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-slim:latest${{ matrix.anybody_version_suffix }}
 
-      - name: Build and push full image
+      - name: Build and push AnyBodyCon full image
         uses: docker/build-push-action@v3
         with:
-          file: Dockerfile-anybodycon-linux
+          file: Dockerfile-anybodycon
           push: ${{ github.event_name != 'pull_request' }}
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
@@ -67,15 +67,15 @@ jobs:
             ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
             BUILD_NUMBER=${{ matrix.build_number }}
           tags: |
-              ghcr.io/anybody/anybodycon-linux:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
-              ghcr.io/anybody/anybodycon-linux:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-linux:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-linux:latest${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
+              ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon:latest${{ matrix.anybody_version_suffix }}
 
-      - name: Build and push github acitons image
+      - name: Build and push AnyBodyCon slim conda image
         uses: docker/build-push-action@v3
         with:
-          file: Dockerfile-anybodycon-linux-github-actions
+          file: Dockerfile-anybodycon-slim-micromamba
           push: ${{ github.event_name != 'pull_request' }}
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
@@ -83,8 +83,42 @@ jobs:
             ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
             BUILD_NUMBER=${{ matrix.build_number }}
           tags: |
-              ghcr.io/anybody/anybodycon-linux-github-actions:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
-              ghcr.io/anybody/anybodycon-linux-github-actions:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-linux-github-actions:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-linux-github-actions:latest${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-slim-micromamba:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
+              ghcr.io/anybody/anybodycon-slim-micromamba:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-slim-micromamba:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-slim-micromamba:latest${{ matrix.anybody_version_suffix }}
+
+      - name: Build and push AnyBodyCon full conda image
+        uses: docker/build-push-action@v3
+        with:
+          file: Dockerfile-anybodycon-micromamba
+          push: ${{ github.event_name != 'pull_request' }}
+          build-args: |
+            ANYBODY_VERSION=${{ matrix.anybody_version }}
+            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
+            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
+            BUILD_NUMBER=${{ matrix.build_number }}
+          tags: |
+              ghcr.io/anybody/anybodycon-micromamba:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
+              ghcr.io/anybody/anybodycon-micromamba:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-micromamba:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-micromamba:latest${{ matrix.anybody_version_suffix }}
+
+      - name: Build and push AnyBodyCon GitHub actions image
+        uses: docker/build-push-action@v3
+        with:
+          file: Dockerfile-anybodycon-github-actions
+          push: ${{ github.event_name != 'pull_request' }}
+          build-args: |
+            ANYBODY_VERSION=${{ matrix.anybody_version }}
+            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
+            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
+            BUILD_NUMBER=${{ matrix.build_number }}
+          tags: |
+              ghcr.io/anybody/anybodycon-github-actions:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
+              ghcr.io/anybody/anybodycon-github-actions:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-github-actions:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-github-actions:latest${{ matrix.anybody_version_suffix }}
+
+
 
