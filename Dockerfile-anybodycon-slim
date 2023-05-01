@@ -25,6 +25,8 @@ ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
 ARG ANYBODY_VERSION_PATCH
 
+SHELL ["/bin/bash", "-c"]
+
 USER root
 # Get the necessary apt list and keys to install from winehq
 RUN apt-get update \
@@ -53,6 +55,7 @@ LABEL org.opencontainers.image.title "anybodycon-slim"
 LABEL org.opencontainers.image.description "Minimal image with AnyBody in a linux docker container"
 LABEL org.opencontainers.image.licenses "https://www.anybodytech.com/legal/software-license-agreement/"
 
+SHELL ["/bin/bash", "-c"]
 
 ARG WINEVERSION
 ARG WINECHANNEL
@@ -129,7 +132,6 @@ RUN WINEPREFIX=/wine winecfg
 COPY --from=anybody-build-store --chown=${ANYBODY_USER_ID} --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
 
 
-SHELL ["/bin/bash", "-c"]
 
 RUN /opt/wine-stable/bin/wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\AnyBody.exe\" \"%1\"" && \
     sleep 5 && \
