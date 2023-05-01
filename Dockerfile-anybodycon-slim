@@ -154,7 +154,7 @@ RUN /opt/wine-stable/bin/wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\comm
  
 # Ensure that root can also use wine
 USER root
-RUN cp -R /wine/drive_c/users/anybodyuser /wine/drive_c/users/root && \
+RUN cp -R /wine/drive_c/users/${ANYBODY_USER} /wine/drive_c/users/root && \
     chown -R root /wine/drive_c/users/root && \
     mkdir /rootwine && \
     ln -s /wine/dosdevices /rootwine/dosdevices && \
