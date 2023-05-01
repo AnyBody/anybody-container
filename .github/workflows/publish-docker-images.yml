@@ -131,7 +131,8 @@ jobs:
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
             ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
             BASE_IMAGE=mcr.microsoft.com/devcontainers/universal
-            DEBIAN_VERSION=focal
+            DISTRO=ubuntu
+            DISTRO_VERSION=focal
             ANYBODY_USER=codespace
             TAG=2.3.1-focal
           tags: |
@@ -152,7 +153,6 @@ jobs:
             BUILD_NUMBER=${{ matrix.build_number }}
             BASE_IMAGE=mcr.microsoft.com/devcontainers/universal
             ANYBODY_USER=codespace
-            DEBIAN_VERSION=focal
             TAG=2.3.1-focal
           tags: |
               ghcr.io/anybody/anybodycon-devcontainer:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}

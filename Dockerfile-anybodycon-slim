@@ -6,10 +6,11 @@ ARG ANYBODY_VERSION_SUFFIX=""
 
 ARG BASE_IMAGE="debian"
 
-ARG DEBIAN_VERSION="bullseye"
-ARG TAG="${DEBIAN_VERSION}-20230411-slim"
+ARG DISTRO="debian"
+ARG DISTRO_VERSION="bullseye"
+ARG TAG="${DISTRO_VERSION}-20230411-slim"
 ARG WINECHANNEL="stable"
-ARG WINEVERSION="4.0.4~${DEBIAN_VERSION}"
+ARG WINEVERSION="4.0.4~${DISTRO_VERSION}"
 
 ## Configure to use container build store which has the files from AnyBody 
 FROM ghcr.io/anybody/container-build-store:${ANYBODY_VERSION}.${ANYBODY_VERSION_PATCH}${ANYBODY_VERSION_SUFFIX} as anybody-build-store
@@ -19,7 +20,7 @@ FROM ghcr.io/anybody/container-build-store:${ANYBODY_VERSION}.${ANYBODY_VERSION_
 # a dummy wine-stable-i386 package to shawdows the 32bit dependency.
 FROM ${BASE_IMAGE}:${TAG} AS build-base
 ARG WINECHANNEL
-ARG DEBIAN_VERSION
+ARG DISTRO_VERSION
 ARG WINEVERSION
 ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
@@ -36,8 +37,8 @@ RUN apt-get update \
     && mv winehq.key /usr/share/keyrings/winehq-archive.key \
     && mkdir -pm755 /etc/apt/keyrings \
     && cp /usr/share/keyrings/winehq-archive.key /etc/apt/keyrings/winehq-archive.key \
-    && wget -nc https://dl.winehq.org/wine-builds/debian/dists/${DEBIAN_VERSION}/winehq-${DEBIAN_VERSION}.sources \
-    && mv winehq-${DEBIAN_VERSION}.sources /etc/apt/sources.list.d/ 
+    && wget -nc https://dl.winehq.org/wine-builds/${DISTRO}/dists/${DISTRO_VERSION}/winehq-${DISTRO_VERSION}.sources \
+    && mv winehq-${DISTRO_VERSION}.sources /etc/apt/sources.list.d/ 
 # Build a fake wine-stable-i386 deb package so we can install wine without 32 bit
 COPY wine-xxx-i386 /wine-${WINECHANNEL}-i386
 RUN sed -i 's/{{WINEVERSION}}/'${WINEVERSION}'/g' /wine-${WINECHANNEL}-i386 
