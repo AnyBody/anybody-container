@@ -1,9 +1,9 @@
 #syntax=docker/dockerfile:1.4
 
-ARG ANYBODY_VERSION 7.4
-ARG ANYBODY_VERSION_PATCH 2
-ARG ANYBODY_VERSION_SUFFIX ""
-ARG BUILD_NUMBER 0
+ARG ANYBODY_VERSION=7.4
+ARG ANYBODY_VERSION_PATCH=4
+ARG ANYBODY_VERSION_SUFFIX=""
+ARG BUILD_NUMBER=0
 
 ARG BASE_IMAGE="ghcr.io/anybody/anybodycon-slim"
 ARG TAG=${ANYBODY_VERSION}.${ANYBODY_VERSION_PATCH}${ANYBODY_VERSION_SUFFIX}-${BUILD_NUMBER}
@@ -21,9 +21,8 @@ LABEL org.opencontainers.image.description "Image with AnyBody in a linux docker
 LABEL org.opencontainers.image.licenses "https://www.anybodytech.com/legal/software-license-agreement/"
 
 
-COPY --from=anybody-build-store --link --chown=${ANYBODY_USER} ["extra" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
+COPY --from=anybody-build-store --link --chown=1000 ["extra" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
 
-#USER root
 
 # Remove _pth file to allow overwriting PYTHON environment variables etc. 
 RUN rm /wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/Python/python*._pth 
@@ -48,44 +47,11 @@ RUN ln "${AMS_MKL_DIR}/mkl_avx2.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_avx2.dll" \
 
 USER $ANYBODY_USER
 
-# Only for the full image with python
-# RUN micromamba install --yes --name base --channel conda-forge --channel bioconda --channel anybody \
-#    nomkl  \
-#    snakemake-minimal \
-#    pandas  \
-#    pytest  \
-#    pytest-xdist  \
-#    pytest-order \
-#    anypytools \
-#    pytest-h5compare && \
-#    micromamba clean --all --yes && \
-#    cd /opt/conda && \
-#    #find -name '*.a' -delete && \
-#    rm -rf ./include && \
-#    rm ./lib/libpython3.1*.so.1.0 && \
-#    #find -name '__pycache__' -type d -exec rm -rf '{}' '+' && \
-#    rm -rf  ./lib/python3.1*/idlelib ./lib/python3.1*/ensurepip \
-#       ./lib/libasan.so.5.0.0 \
-#       ./lib/libtsan.so.0.0.0 \
-#       ./lib/liblsan.so.0.0.0 \
-#       ./lib/libubsan.so.1.0.0 \
-#       ./bin/x86_64-conda-linux-gnu-ld \
-#       ./bin/sqlite* \
-#       ./share/terminfo && \
-#    find ./lib/python3.1*/site-packages/scipy -name 'tests' -type d -exec rm -rf '{}' '+' && \
-#    find ./lib/python3.1*/site-packages/numpy -name 'tests' -type d -exec rm -rf '{}' '+' && \
-#    find ./lib/python3.1*/site-packages/pandas -name 'tests' -type d -exec rm -rf '{}' '+' && \
-#    find ./lib/python3.1*/site-packages -name '*.pyx' -delete && \
-#    rm -rf ./lib/python3.11/site-packages/uvloop/loop.c
-
-
-# ENV PYTHONHASHSEED=1234
+ENV PYTHONHASHSEED=1234
 
 ENV WINEPATH=C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\\Python;C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\\Python\\Library\\mingw-w64\\bin;C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\\Python\\Library\\usr\\bin;C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\\Python\\Library\\bin;C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\\Python\\Scripts;C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\\Python\\bin;c:\\windows\\system32;c:\\windows;c:\\windows\\system32\\wbem
-ENV SystemRoot=c:\\windows
-ENV SystemDrive=c:
 
-# ENV PATH "$ANYBODY_ROOT_PREFIX/bin:$PATH"
+# # ENV PATH "$ANYBODY_ROOT_PREFIX/bin:$PATH"
 
 # WORKDIR $HOME
 

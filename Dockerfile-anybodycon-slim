@@ -1,7 +1,7 @@
 #syntax=docker/dockerfile:1.4
 
 ARG ANYBODY_VERSION=7.4
-ARG ANYBODY_VERSION_PATCH=2
+ARG ANYBODY_VERSION_PATCH=4
 ARG ANYBODY_VERSION_SUFFIX=""
 
 ARG BASE_IMAGE="debian"
@@ -129,6 +129,7 @@ RUN WINEPREFIX=/wine winecfg
 COPY --from=anybody-build-store --chown=${ANYBODY_USER_ID} --link ["minimal" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
 
 
+SHELL ["/bin/bash", "-c"]
 
 RUN /opt/wine-stable/bin/wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\command /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\AnyBody.exe\" \"%1\"" && \
     sleep 5 && \
@@ -138,12 +139,13 @@ RUN /opt/wine-stable/bin/wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\comm
     mkdir -p /wine/drive_c/users/${ANYBODY_USER}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
     mkdir -p /wine/drive_c/users/${ANYBODY_USER}/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
     mkdir -p /wine/drive_c/ProgramData/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    mkdir -p /wine/drive_c/users/${ANYBODY_USER}/Local\ Settings/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    ln -s /home/${ANYBODY_USER} /github/home
+    mkdir -p /wine/drive_c/users/${ANYBODY_USER}/Local\ Settings/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x
+ 
+#  #   ln -s /home/${ANYBODY_USER} /github/home
 
 
  
-# # Ensure that root can also use wine
+# Ensure that root can also use wine
 USER root
 RUN cp -R /wine/drive_c/users/anybodyuser /wine/drive_c/users/root && \
     chown -R root /wine/drive_c/users/root && \
@@ -155,10 +157,19 @@ RUN cp -R /wine/drive_c/users/anybodyuser /wine/drive_c/users/root && \
     chown root /rootwine/user.reg && \
     chown root /rootwine/system.reg && \
     WINEPREFIX=/rootwine winecfg && \
-    sed -i '2i if [ $(id -u) = 0 ]; then export WINEPREFIX=/rootwine; fi' /usr/local/bin/_entrypoint.sh && \
-    sed -i '2i if [ $(id -u) = 0 ]; then export WINEPREFIX=/rootwine; fi' /usr/local/bin/_dockerfile_shell.sh
+    sed -i '2i export WINEPREFIX=/rootwine' /root/.profile && \
+    sed -i '2i export WINEPREFIX=/rootwine' /root/.bashrc
 
+    # THis must be moved to the mamba image
+    # && \
+    # sed -i '2i if [ $(id -u) = 0 ]; then export WINEPREFIX=/rootwine; fi' /usr/local/bin/_entrypoint.sh && \
+    # sed -i '2i if [ $(id -u) = 0 ]; then export WINEPREFIX=/rootwine; fi' /usr/local/bin/_dockerfile_shell.sh
 
+# SHELL ["/bin/sh", "-c"]
+#echo $WINEPREFIX
+
+ENV SystemRoot=c:\\windows
+ENV SystemDrive=c:
 
 USER ${ANYBODY_USER}
 
