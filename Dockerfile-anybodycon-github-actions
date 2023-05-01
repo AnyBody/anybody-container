@@ -84,5 +84,7 @@ RUN micromamba install --yes --name base --channel conda-forge --channel biocond
    rm -rf ./lib/python3.11/site-packages/uvloop/loop.c && \
    mv /opt/conda/bin/clear  /opt/conda/bin/clear.back
 
+ENV PATH "$MAMBA_ROOT_PREFIX/bin:$PATH"
+
 
 ENV PYTHONHASHSEED=1234
