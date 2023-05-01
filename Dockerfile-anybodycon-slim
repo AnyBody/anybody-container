@@ -71,10 +71,13 @@ ARG ANYBODY_USER_GID=1000
 # Change the default uid:gid to be easily compatible with github actions
 USER root
 
-RUN groupadd -g "${ANYBODY_USER_GID}" "${ANYBODY_USER}"
-RUN useradd -u "${ANYBODY_USER_ID}" -g "${ANYBODY_USER_GID}" -ms /bin/bash "${ANYBODY_USER}"
+RUN if [ ! $(getent group "${ANYBODY_USER_GID}") ]; then \
+       groupadd -g "${ANYBODY_USER_GID}" "${ANYBODY_USER}"; \
+    fi
 
-
+RUN if [ ! $(getent passwd "${ANYBODY_USER_ID}") ]; then \
+       useradd -u "${ANYBODY_USER_ID}" -g "${ANYBODY_USER_GID}" -ms /bin/bash "${ANYBODY_USER}"; \
+    fi
 
 # ## Make sure apt installs stuff in noninteractive mode 
 # ENV DEBIAN_FRONTEND noninteractive
