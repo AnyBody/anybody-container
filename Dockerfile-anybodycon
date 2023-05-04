@@ -22,6 +22,13 @@ LABEL org.opencontainers.image.licenses "https://www.anybodytech.com/legal/softw
 
 
 COPY --from=anybody-build-store --link --chown=1000 ["extra" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
+COPY first-run-notice.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt
+
+RUN mkdir -p /usr/local/etc/vscode-dev-containers && \
+    mkdir -p "$HOME/.config/vscode-dev-containers" && \
+    touch "$HOME/.config/vscode-dev-containers/conda-notice-already-displayed"
+
+COPY first-run-notice.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt
 
 
 # Remove _pth file to allow overwriting PYTHON environment variables etc. 
