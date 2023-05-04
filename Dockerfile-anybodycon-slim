@@ -142,6 +142,7 @@ RUN /opt/wine-stable/bin/wine reg add HKCR\\AnyBody.AnyScript\\shell\\Open\\comm
     sleep 5 && \
     /opt/wine-stable/bin/wine reg add "HKLM\\SOFTWARE\\AnyBody Technology\\AnyBody.${ANYBODY_VERSION} (64-bit)${ANYBODY_VERSION_SUFFIX/_/ }" /v "InstallDir" /t REG_SZ /d "C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}" && \
     sleep 5 && \
+    rm /wine/drive_c/users/${ANYBODY_USER}/My\ Documents && \
     mkdir -p /wine/drive_c/users/${ANYBODY_USER}/My\ Documents && \
     mkdir -p /wine/drive_c/users/${ANYBODY_USER}/AppData/Local/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
     mkdir -p /wine/drive_c/users/${ANYBODY_USER}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
