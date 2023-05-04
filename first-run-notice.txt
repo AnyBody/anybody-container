@@ -1,0 +1,12 @@
+👋 Welcome to AnyBody Codespaces! You are on the default codespace image with AnyBody added
+   - It includes runtimes and tools for Python, Node.js, Docker, and more. See the full list here: https://aka.ms/ghcs-default-image
+   - Want to use a custom image instead? Learn more here: https://github.com/AnyBody/anybody-container
+
+🔍 To run AnyBody directly type $ anybodycon
+
+📝 Note: AnyBody needs a license server (floating license) to work: 
+    Provide the licence server by setting environment variables:
+      export RLM_LICENSE=<port>@<ip-adress>
+      export RLM_LICENSE_PASSWORD=<password>
+
+
