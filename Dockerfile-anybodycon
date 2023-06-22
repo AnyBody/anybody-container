@@ -32,7 +32,7 @@ COPY first-run-notice.txt /usr/local/etc/vscode-dev-containers/first-run-notice.
 
 
 # Remove _pth file to allow overwriting PYTHON environment variables etc. 
-RUN rm /wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/Python/python*._pth 
+RUN rm -f /wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/Python/python*._pth 
 
 ARG AMS_MKL_DIR=/wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBody.MKL-2019.1.144-x64
 ARG AMS_PYTHON_MKL_DIR=/wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/Python/Library/bin
