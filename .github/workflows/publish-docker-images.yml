@@ -143,6 +143,12 @@ jobs:
           docker builder prune -af
           docker image prune -af
 
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          cleanup: false
+            
       - name: Build and push AnyBodyCon slim devcontainer image
         uses: docker/build-push-action@v4
         with:
@@ -150,7 +156,6 @@ jobs:
           push: false
           load: true
           cache-from: type=gha, scope=${{ github.workflow }}
-          cache-to: type=local,dest=/tmp/.buildx-cache
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
@@ -172,7 +177,7 @@ jobs:
         with:
           file: Dockerfile-anybodycon
           push: ${{ github.event_name != 'pull_request' }}
-          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-from: type=gha, scope=${{ github.workflow }}
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
