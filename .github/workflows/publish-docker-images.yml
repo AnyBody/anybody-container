@@ -148,6 +148,7 @@ jobs:
         with:
           file: Dockerfile-anybodycon-slim
           push: false
+          load: true
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}
           build-args: |
