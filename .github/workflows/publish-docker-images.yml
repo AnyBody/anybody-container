@@ -43,10 +43,12 @@ jobs:
 
 
       - name: Build and push AnyBodyCon Slim image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           file: Dockerfile-anybodycon-slim
           push: ${{ github.event_name != 'pull_request' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
@@ -57,27 +59,12 @@ jobs:
               ghcr.io/anybody/anybodycon-slim:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-slim:latest${{ matrix.anybody_version_suffix }}
 
-      - name: Build and push AnyBodyCon full image
-        uses: docker/build-push-action@v3
-        with:
-          file: Dockerfile-anybodycon
-          push: ${{ github.event_name != 'pull_request' }}
-          build-args: |
-            ANYBODY_VERSION=${{ matrix.anybody_version }}
-            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
-            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
-            BUILD_NUMBER=${{ matrix.build_number }}
-          tags: |
-              ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
-              ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon:latest${{ matrix.anybody_version_suffix }}
-
       - name: Build and push AnyBodyCon slim conda image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           file: Dockerfile-anybodycon-slim-micromamba
           push: ${{ github.event_name != 'pull_request' }}
+          cache-from: type=gha
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
@@ -89,11 +76,34 @@ jobs:
               ghcr.io/anybody/anybodycon-slim-micromamba:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-slim-micromamba:latest${{ matrix.anybody_version_suffix }}
 
+
+
+      - name: Build and push AnyBodyCon full image
+        uses: docker/build-push-action@v4
+        with:
+          file: Dockerfile-anybodycon
+          push: ${{ github.event_name != 'pull_request' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            ANYBODY_VERSION=${{ matrix.anybody_version }}
+            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
+            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
+            BUILD_NUMBER=${{ matrix.build_number }}
+          tags: |
+              ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
+              ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon:latest${{ matrix.anybody_version_suffix }}
+
+
       - name: Build and push AnyBodyCon full conda image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           file: Dockerfile-anybodycon-micromamba
           push: ${{ github.event_name != 'pull_request' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
@@ -106,10 +116,11 @@ jobs:
               ghcr.io/anybody/anybodycon-micromamba:latest${{ matrix.anybody_version_suffix }}
 
       - name: Build and push AnyBodyCon GitHub actions image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           file: Dockerfile-anybodycon-github-actions
           push: ${{ github.event_name != 'pull_request' }}
+          cache-from: type=gha
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
@@ -122,11 +133,14 @@ jobs:
               ghcr.io/anybody/anybodycon-github-actions:latest${{ matrix.anybody_version_suffix }}
 
 
+
       - name: Build and push AnyBodyCon slim devcontainer image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           file: Dockerfile-anybodycon-slim
           push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
@@ -142,11 +156,13 @@ jobs:
               ghcr.io/anybody/anybodycon-slim-devcontainer:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-slim-devcontainer:latest${{ matrix.anybody_version_suffix }}
 
+
       - name: Build and push AnyBodyCon devcontainer image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           file: Dockerfile-anybodycon
           push: ${{ github.event_name != 'pull_request' }}
+          cache-from: type=gha
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
@@ -159,4 +175,5 @@ jobs:
               ghcr.io/anybody/anybodycon-devcontainer:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-devcontainer:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-devcontainer:latest${{ matrix.anybody_version_suffix }}
+
 
