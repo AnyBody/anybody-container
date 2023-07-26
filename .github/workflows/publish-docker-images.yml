@@ -68,6 +68,7 @@ jobs:
           file: Dockerfile-anybodycon-slim-micromamba
           push: ${{ github.event_name != 'pull_request' }}
           cache-from: type=gha, scope=${{ github.workflow }}
+          cache-to: type=gha, scope=${{ github.workflow }}
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
@@ -124,6 +125,7 @@ jobs:
           file: Dockerfile-anybodycon-github-actions
           push: ${{ github.event_name != 'pull_request' }}
           cache-from: type=gha, scope=${{ github.workflow }}
+          cache-to: type=gha, scope=${{ github.workflow }}
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
@@ -153,10 +155,9 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           file: Dockerfile-anybodycon-slim
-          push: false
-          load: true
+          push: ${{ github.event_name != 'pull_request' }}
           cache-from: type=gha, scope=${{ github.workflow }}
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-to: type=gha, scope=${{ github.workflow }}
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
@@ -178,7 +179,8 @@ jobs:
         with:
           file: Dockerfile-anybodycon
           push: ${{ github.event_name != 'pull_request' }}
-          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-from: type=gha, scope=${{ github.workflow }}
+          cache-to: type=gha, scope=${{ github.workflow }}
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
