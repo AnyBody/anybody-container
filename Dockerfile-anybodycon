@@ -15,11 +15,6 @@ FROM ${BASE_IMAGE}:${TAG}
 ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
 
-LABEL org.opencontainers.image.url https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-slim
-LABEL org.opencontainers.image.title "anybodycon"
-LABEL org.opencontainers.image.description "Image with AnyBody in a linux docker container"
-LABEL org.opencontainers.image.licenses "https://www.anybodytech.com/legal/software-license-agreement/"
-
 
 COPY --from=anybody-build-store --link --chown=1000 ["extra" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
 COPY first-run-notice.txt /usr/local/etc/vscode-dev-containers/first-run-notice.txt

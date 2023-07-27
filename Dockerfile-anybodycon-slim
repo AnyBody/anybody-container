@@ -52,10 +52,6 @@ RUN equivs-build /wine-${WINECHANNEL}-i386
 
 
 FROM ${BASE_IMAGE}:${TAG}
-LABEL org.opencontainers.image.url https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-linux-minimal
-LABEL org.opencontainers.image.title "anybodycon-slim"
-LABEL org.opencontainers.image.description "Minimal image with AnyBody in a linux docker container"
-LABEL org.opencontainers.image.licenses "https://www.anybodytech.com/legal/software-license-agreement/"
 
 SHELL ["/bin/bash", "-c"]
 
