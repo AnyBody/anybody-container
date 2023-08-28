@@ -1,8 +1,8 @@
 # AnyBody Container
 
-> Docker images with Anybody console application for running containerized AnyBody simulations
+> Docker images for running containerized AnyBody simulations
 
-The AnyBody container images can be used to run the AnyBody simulations in Linux docker containers. Containers are hosted on the
+The AnyBody container images can be used to run AnyBody simulations in Linux docker containers. Containers are hosted on the
 GitHub container registry.
 
 ``` 
@@ -13,36 +13,36 @@ docker pull ghcr.io/anybody/anybodycon:7.4.4-3
 ## Container variants
 
 
-The linux based containers uses [Wine](https://www.winehq.org/) for running the Windows
-based AnyBody console application. The images uses an older wine version "4.0.4" to keep image as small as possible.
+The linux based containers uses [Wine](https://www.winehq.org/) when running the Windows
+based AnyBody console application. The images uses wine "4.0.4" (slightly older version) to keep image as small as possible.
 
 The containers come in multiple flavors:
 
 * [ghcr.io/anybody/anybodycon-slim](https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-slim):
 
-    > This is minimal version of the AnyBody Console application. It is based on the [`debian:bullseye-slim`](https://hub.docker.com/_/debian). It is stripped down to keep the image as small as possible. 
+    > This is the minimal version of the container. It is based on [`debian:bullseye-slim`](https://hub.docker.com/_/debian). It is stripped down to keep the image as small as possible. 
     > It does not include the AnyBody Managed Model Repository (AMMR) or AnyBody's own windows based Python distribution.
     > The total image size is 844 MB. 
 
 * [anybodycon](https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon):
 
-    > This ships with a complete version of the AnyBody modeling system (i.e. including AMMR etc.)
+    > This container has the complete version of the AnyBody modeling system (i.e. including AMMR etc.) 
 
 * [anybodycon-micromamba](https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-micromamba):
 
-    > Both the slim and full image exist in a version with `-micromamba` postfix, which is has [micromamba](https://github.com/mamba-org/micromamba-docker)
-    > (conda) added to the container.  
+    > Both the slim and full image exist in versions with `-micromamba` postfix, which is has [micromamba](https://github.com/mamba-org/micromamba-docker)
+    > (conda) preinstalled in the container.  
 
 * [anybodycon-github-actions](https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-github-actions):
 
-    > This is the full anybodycon image with micromamba, configured for running in the GitHub actions CI system. It comes with python 
+    > This is the full anybodycon-micromamba image configured for running in the GitHub actions CI system. It slso comes with python 
     > libaries relevant to AnyBody (e.g. `anypytools`, `pytest`) preinstalled to make CI jobs load faster. See the
     > [GitHub actions example ](https://github.com/AnyBody/GitHub-Actions-Example) for more info. 
 
 * [anybodycon-devcontainer](https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-devcontainer):
 
     > This is the full anybodycon image configured for [Development Containers](https://containers.dev/), like for example GitHub Codespaces
-    > and similar services. See also the vs code [documentaiton](https://code.visualstudio.com/docs/devcontainers/containers) for more info. 
+    > and similar services. See the VSCode [documentaiton](https://code.visualstudio.com/docs/devcontainers/containers) for more info. 
     > This image is based on the Microsoft [Universal development container image](https://hub.docker.com/_/microsoft-devcontainers-universal) 
     > but with AnyBody added on top.  
     
