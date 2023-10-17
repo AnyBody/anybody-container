@@ -41,6 +41,10 @@ ENV MAMBA_USER=$NEW_MAMBA_USER
 RUN mkdir -p /github && chown -R ${NEW_MAMBA_USER_ID}:${NEW_MAMBA_USER_GID} /github && \
     ln -s /home/${ANYBODY_USER} /github/home
 
+# Run initialization scripts again after chaning the mamba user
+RUN /usr/local/bin/_dockerfile_initialize_user_accounts.sh && \
+    /usr/local/bin/_dockerfile_setup_root_prefix.sh
+
 
 # Change the GID/UID of wine to values which work with github actions
 RUN chown ${NEW_MAMBA_USER_ID}:${NEW_MAMBA_USER_GID} /wine && \
@@ -61,6 +65,7 @@ RUN micromamba install --yes --name base --channel conda-forge --channel biocond
    pytest  \
    pytest-xdist  \
    pytest-order \
+   pytest-split \
    anypytools \
    pytest-h5compare && \
    micromamba clean --all --yes && \
