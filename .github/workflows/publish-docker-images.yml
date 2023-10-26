@@ -26,7 +26,7 @@ jobs:
           - anybody_version: 7.5
             anybody_version_patch: 0
             anybody_version_suffix: "_Beta"
-            build_number: 6
+            build_number: 7
 
             
     steps:
