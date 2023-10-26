@@ -36,6 +36,8 @@ RUN usermod "--login=${NEW_MAMBA_USER}" "--home=/home/${NEW_MAMBA_USER}" \
     echo "${NEW_MAMBA_USER}" > "/etc/arg_mamba_user" && \
     :
 ENV MAMBA_USER=$NEW_MAMBA_USER
+ENV MAMBA_USER_ID=$NEW_MAMBA_USER_ID
+ENV MAMBA_USER_GID=$NEW_MAMBA_USER_GID
 
 
 RUN mkdir -p /github && chown -R ${NEW_MAMBA_USER_ID}:${NEW_MAMBA_USER_GID} /github && \
