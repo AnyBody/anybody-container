@@ -38,9 +38,16 @@ USER root
 # The following files are excluded in .dockeringore and we link to 
 # the AnyBody copies to save image size.
 RUN ln "${AMS_MKL_DIR}/mkl_avx2.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_avx2.dll" \
+   && ln "${AMS_MKL_DIR}/mkl_avx.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_avx.dll" \
    && ln "${AMS_MKL_DIR}/mkl_avx512.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_avx512.dll" \
    && ln "${AMS_MKL_DIR}/mkl_core.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_core.dll" \
    && ln "${AMS_MKL_DIR}/mkl_intel_thread.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_intel_thread.dll" \
+   && ln "${AMS_MKL_DIR}/mkl_tbb_thread.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_tbb_thread.dll" \
+   && ln "${AMS_MKL_DIR}/mkl_mc.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_mc.dll" \
+   && ln "${AMS_MKL_DIR}/mkl_mc3.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_mc3.dll" \
+   && ln "${AMS_MKL_DIR}/mkl_def.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_def.dll" \
+   && ln "${AMS_MKL_DIR}/mkl_sequential.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_sequential.dll" \
+   && ln "${AMS_MKL_DIR}/mkl_rt.dll"  "${AMS_PYTHON_MKL_DIR}/mkl_rt.dll" \
    && apt-get update \
    && apt-get install -y --no-install-recommends --no-upgrade git \
    && apt autoremove -y \
