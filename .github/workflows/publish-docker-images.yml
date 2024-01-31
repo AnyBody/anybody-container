@@ -24,10 +24,10 @@ jobs:
             anybody_version_patch: 4
             anybody_version_suffix: ""
             build_number: 3
-          - anybody_version: 7.5
+          - anybody_version: 8.0
             anybody_version_patch: 0
-            anybody_version_suffix: "_Beta"
-            build_number: 7
+            anybody_version_suffix: "_Beta2"
+            build_number: 0
 
             
     steps:
