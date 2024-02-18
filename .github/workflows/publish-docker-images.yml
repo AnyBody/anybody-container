@@ -2,7 +2,7 @@ name: Build and push AnyBodyCon linux images
 
 on:
   push:
-    branches: ['release']
+    branches: ['main']
   pull_request:
     branches:
       - 'main'
@@ -20,19 +20,15 @@ jobs:
     strategy:
       matrix:
         include:
-          - anybody_version: 7.4
-            anybody_version_patch: 4
-            anybody_version_suffix: ""
-            build_number: 3
           - anybody_version: "8.0"
             anybody_version_patch: "0"
-            anybody_version_suffix: "_Beta"
+            anybody_version_suffix: ""
             build_number: 0
 
             
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -55,66 +51,17 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
 
-      - name: Build and push AnyBodyCon Slim image
-        uses: docker/build-push-action@v4
-        with:
-          file: Dockerfile-anybodycon-slim
-          push: ${{ github.event_name != 'pull_request' }}
-          cache-from: type=gha, scope=${{ github.workflow }}
-          cache-to: type=gha, scope=${{ github.workflow }}
-          build-args: |
-            ANYBODY_VERSION=${{ matrix.anybody_version }}
-            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
-            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
-          tags: |
-              ghcr.io/anybody/anybodycon-slim:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
-              ghcr.io/anybody/anybodycon-slim:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-slim:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-slim:latest${{ matrix.anybody_version_suffix }}
-          labels: |
-              org.opencontainers.image.title="anybodycon-slim"
-              org.opencontainers.image.description="Minimal image with AnyBody in a linux docker container"
-              org.opencontainers.image.version="${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}"
-              org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-slim"
-              org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
-
-      - name: Build and push AnyBodyCon slim conda image
-        uses: docker/build-push-action@v4
-        with:
-          file: Dockerfile-anybodycon-slim-micromamba
-          push: ${{ github.event_name != 'pull_request' }}
-          cache-from: type=gha, scope=${{ github.workflow }}
-          cache-to: type=gha, scope=${{ github.workflow }}
-          build-args: |
-            ANYBODY_VERSION=${{ matrix.anybody_version }}
-            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
-            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
-            BUILD_NUMBER=${{ matrix.build_number }}
-          tags: |
-              ghcr.io/anybody/anybodycon-slim-micromamba:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
-              ghcr.io/anybody/anybodycon-slim-micromamba:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-slim-micromamba:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-slim-micromamba:latest${{ matrix.anybody_version_suffix }}
-          labels: |
-              org.opencontainers.image.title="anybodycon-slim-micromamba"
-              org.opencontainers.image.description="Image with AnyBody in a linux docker container and micromamba python"
-              org.opencontainers.image.version="${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}"
-              org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-slim-micromamba"
-              org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
-
-
-      - name: Build and push AnyBodyCon full image
+      - name: Build and push AnyBodyCon image
         uses: docker/build-push-action@v4
         with:
           file: Dockerfile-anybodycon
           push: ${{ github.event_name != 'pull_request' }}
           cache-from: type=gha, scope=${{ github.workflow }}
-          cache-to: type=gha,scope=${{ github.workflow }}
+          cache-to: type=gha, scope=${{ github.workflow }}
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
             ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
-            BUILD_NUMBER=${{ matrix.build_number }}
           tags: |
               ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
               ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
@@ -122,35 +69,10 @@ jobs:
               ghcr.io/anybody/anybodycon:latest${{ matrix.anybody_version_suffix }}
           labels: |
               org.opencontainers.image.title="anybodycon"
-              org.opencontainers.image.description="Image with AnyBody in a linux docker container"
+              org.opencontainers.image.description="Minimal image with AnyBody in a linux docker container"
               org.opencontainers.image.version="${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}"
               org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon"
               org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
-
-      - name: Build and push AnyBodyCon full conda image
-        uses: docker/build-push-action@v4
-        with:
-          file: Dockerfile-anybodycon-micromamba
-          push: ${{ github.event_name != 'pull_request' }}
-          cache-from: type=gha, scope=${{ github.workflow }}
-          cache-to: type=gha, scope=${{ github.workflow }}
-          build-args: |
-            ANYBODY_VERSION=${{ matrix.anybody_version }}
-            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
-            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
-            BUILD_NUMBER=${{ matrix.build_number }}
-          tags: |
-              ghcr.io/anybody/anybodycon-micromamba:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
-              ghcr.io/anybody/anybodycon-micromamba:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-micromamba:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-micromamba:latest${{ matrix.anybody_version_suffix }}
-          labels: |
-              org.opencontainers.image.title="anybodycon-micromamba"
-              org.opencontainers.image.description="Image with AnyBody in a linux docker container and micromamba python"
-              org.opencontainers.image.version="${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}"
-              org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-micromamba"
-              org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
-
 
 
       - name: Build and push AnyBodyCon GitHub actions image
@@ -172,7 +94,7 @@ jobs:
               ghcr.io/anybody/anybodycon-github-actions:latest${{ matrix.anybody_version_suffix }}
           labels: |
               org.opencontainers.image.title="anybodycon-github-actions"
-              org.opencontainers.image.description="Image with AnyBody and conda in a linux docker container and configured for github actions"
+              org.opencontainers.image.description="Image with AnyBody in a linux docker container configured for github actions"
               org.opencontainers.image.version="${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}"
               org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-github-actions"
               org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
@@ -184,16 +106,15 @@ jobs:
           docker builder prune -af
           docker image prune -af
 
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         with:
           cleanup: false
             
-      - name: Build and push AnyBodyCon slim devcontainer image
+      - name: Build and push AnyBodyCon devcontainer image
         uses: docker/build-push-action@v4
         with:
-          file: Dockerfile-anybodycon-slim
+          file: Dockerfile-anybodycon
           push: ${{ github.event_name != 'pull_request' }}
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}
@@ -207,41 +128,16 @@ jobs:
             ANYBODY_USER=codespace
             TAG=2.3.1-focal
           tags: |
-              ghcr.io/anybody/anybodycon-slim-devcontainer:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
-              ghcr.io/anybody/anybodycon-slim-devcontainer:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-slim-devcontainer:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
-              ghcr.io/anybody/anybodycon-slim-devcontainer:latest${{ matrix.anybody_version_suffix }}
-          labels: |
-              org.opencontainers.image.title="anybodycon-slim-devcontainer"
-              org.opencontainers.image.description="This is the slim anybodycon image configured for Development Containers, like for example GitHub Codespaces and similar services"
-              org.opencontainers.image.version="${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}"
-              org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-slim-devcontainer"
-              org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
-
-      - name: Build and push AnyBodyCon devcontainer image
-        uses: docker/build-push-action@v4
-        with:
-          file: Dockerfile-anybodycon
-          push: ${{ github.event_name != 'pull_request' }}
-          cache-from: type=gha, scope=${{ github.workflow }}
-          cache-to: type=gha, scope=${{ github.workflow }}
-          build-args: |
-            ANYBODY_VERSION=${{ matrix.anybody_version }}
-            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
-            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
-            BUILD_NUMBER=${{ matrix.build_number }}
-            BASE_IMAGE=ghcr.io/anybody/anybodycon-slim-devcontainer
-            ANYBODY_USER=codespace
-          tags: |
               ghcr.io/anybody/anybodycon-devcontainer:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
               ghcr.io/anybody/anybodycon-devcontainer:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-devcontainer:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
               ghcr.io/anybody/anybodycon-devcontainer:latest${{ matrix.anybody_version_suffix }}
           labels: |
               org.opencontainers.image.title="anybodycon-devcontainer"
-              org.opencontainers.image.description="This is the full anybodycon image configured for Development Containers, like for example GitHub Codespaces and similar services"
+              org.opencontainers.image.description="This is the slim anybodycon image configured for Development Containers, like for example GitHub Codespaces and similar services"
               org.opencontainers.image.version="${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}"
               org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-devcontainer"
               org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
+
 
 
