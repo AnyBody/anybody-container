@@ -53,13 +53,14 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
 
-      - name: Build and push AnyBodyCon image
+      - name: Build AnyBodyCon image
         uses: docker/build-push-action@v4
         with:
           file: Dockerfile-anybodycon
           push: ${{ github.event_name != 'pull_request' }}
           cache-from: type=gha, scope=${{ github.workflow }}
-          cache-to: type=inline
+          cache-to: type=gha, scope=${{ github.workflow }}
+          load: true
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
@@ -77,12 +78,13 @@ jobs:
               org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
 
 
-      - name: Build and push AnyBodyCon GitHub actions image
+      - name: Build AnyBodyCon-github-actions image
         uses: docker/build-push-action@v4
         with:
           file: Dockerfile-anybodycon-github-actions
           push: ${{ github.event_name != 'pull_request' }}
-          cache-from: type=inline
+          cache-from: type=gha, scope=${{ github.workflow }}
+          cache-to: type=gha, scope=${{ github.workflow }}
           build-args: |
             ANYBODY_VERSION=${{ matrix.anybody_version }}
             ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
