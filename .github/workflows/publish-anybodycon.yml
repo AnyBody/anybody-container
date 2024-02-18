@@ -1,0 +1,110 @@
+name: Build and push AnyBodyCon linux images
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+
+jobs:
+  create-images:
+    name: Linux images for AnyBody.${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    strategy:
+      matrix:
+        include:
+          - anybody_version: "8.0"
+            anybody_version_patch: "0"
+            anybody_version_suffix: ""
+            build_number: 0
+
+            
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+           cleanup: false
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            anybody/anybodycon
+            ghcr.io/anybody/anybodycon
+
+        
+      - name: Log in to the Container registry
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Build AnyBodyCon image
+        uses: docker/build-push-action@v4
+        with:
+          file: Dockerfile-anybodycon
+          push: ${{ github.event_name != 'pull_request' }}
+          cache-from: type=gha, scope=${{ github.workflow }}
+          cache-to: type=gha, scope=${{ github.workflow }}
+          build-args: |
+            ANYBODY_VERSION=${{ matrix.anybody_version }}
+            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
+            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
+          tags: |
+              ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
+              ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon:latest${{ matrix.anybody_version_suffix }}
+          labels: |
+              org.opencontainers.image.title="anybodycon"
+              org.opencontainers.image.description="Minimal image with AnyBody in a linux docker container"
+              org.opencontainers.image.version="${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}"
+              org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon"
+              org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
+
+
+
+      - name: Build and push AnyBodyCon devcontainer image
+        uses: docker/build-push-action@v4
+        with:
+          file: Dockerfile-anybodycon
+          push: ${{ github.event_name != 'pull_request' }}
+          cache-from: type=gha, scope=${{ github.workflow }}
+          cache-to: type=gha, scope=${{ github.workflow }}
+          build-args: |
+            ANYBODY_VERSION=${{ matrix.anybody_version }}
+            ANYBODY_VERSION_PATCH=${{ matrix.anybody_version_patch }}
+            ANYBODY_VERSION_SUFFIX=${{ matrix.anybody_version_suffix }}
+            BASE_IMAGE=mcr.microsoft.com/devcontainers/universal
+            DISTRO=ubuntu
+            DISTRO_VERSION=focal
+            ANYBODY_USER=codespace
+            TAG=2.3.1-focal
+          tags: |
+              ghcr.io/anybody/anybodycon-devcontainer:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}-${{ matrix.build_number }}
+              ghcr.io/anybody/anybodycon-devcontainer:${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-devcontainer:${{ matrix.anybody_version }}${{ matrix.anybody_version_suffix }}
+              ghcr.io/anybody/anybodycon-devcontainer:latest${{ matrix.anybody_version_suffix }}
+          labels: |
+              org.opencontainers.image.title="anybodycon-devcontainer"
+              org.opencontainers.image.description="This is the slim anybodycon image configured for Development Containers, like for example GitHub Codespaces and similar services"
+              org.opencontainers.image.version="${{ matrix.anybody_version }}.${{ matrix.anybody_version_patch }}${{ matrix.anybody_version_suffix }}"
+              org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-devcontainer"
+              org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
+
+
+

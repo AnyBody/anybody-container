@@ -1,11 +1,11 @@
 #syntax=docker/dockerfile:1.4
 
-ARG ANYBODY_VERSION=7.4
-ARG ANYBODY_VERSION_PATCH=4
+ARG ANYBODY_VERSION=8.0
+ARG ANYBODY_VERSION_PATCH=0
 ARG ANYBODY_VERSION_SUFFIX=""
 ARG BUILD_NUMBER=0
 
-ARG BASE_IMAGE="ghcr.io/anybody/anybodycon-micromamba"
+ARG BASE_IMAGE="ghcr.io/anybody/anybodycon"
 ARG TAG=${ANYBODY_VERSION}.${ANYBODY_VERSION_PATCH}${ANYBODY_VERSION_SUFFIX}-${BUILD_NUMBER}
 
 
@@ -20,78 +20,27 @@ LABEL org.opencontainers.image.title "anybodycon-github-actions"
 LABEL org.opencontainers.image.description "Image with AnyBody and conda in a linux docker container and configured for github actions"
 LABEL org.opencontainers.image.licenses "https://www.anybodytech.com/legal/software-license-agreement/"
 
-
 # Change the default uid:gid to be easily compatible with github actions
-ARG NEW_MAMBA_USER=anybodyuser
-ARG NEW_MAMBA_USER_ID=1001
-ARG NEW_MAMBA_USER_GID=121
+ARG ANYBODY_USER=anybodyuser
+ARG ANYBODY_USER_ID=1001
+ARG ANYBODY_USER_GID=121
 
 USER root
-RUN usermod "--login=${NEW_MAMBA_USER}" "--home=/home/${NEW_MAMBA_USER}" \
-        --move-home "-u ${NEW_MAMBA_USER_ID}" "${MAMBA_USER}" && \
-    groupmod "--new-name=${NEW_MAMBA_USER}" \
-             "-g ${NEW_MAMBA_USER_GID}" "${MAMBA_USER}" && \
-    # Update the expected value of MAMBA_USER for the
-    # _entrypoint.sh consistency check.
-    echo "${NEW_MAMBA_USER}" > "/etc/arg_mamba_user" && \
-    :
-ENV MAMBA_USER=$NEW_MAMBA_USER
-ENV MAMBA_USER_ID=$NEW_MAMBA_USER_ID
-ENV MAMBA_USER_GID=$NEW_MAMBA_USER_GID
+RUN usermod "--login=${ANYBODY_USER}" "--home=/home/${ANYBODY_USER}" \
+        --move-home "-u ${ANYBODY_USER_ID}" "${ANYBODY_USER}" && \
+    groupmod "--new-name=${ANYBODY_USER}" \
+             "-g ${ANYBODY_USER_GID}" "${ANYBODY_USER}"
 
 
-RUN mkdir -p /github && chown -R ${NEW_MAMBA_USER_ID}:${NEW_MAMBA_USER_GID} /github && \
+RUN mkdir -p /github && chown -R ${ANYBODY_USER_ID}:${ANYBODY_USER_GID} /github && \
     ln -s /home/${ANYBODY_USER} /github/home
 
-# Run initialization scripts again after chaning the mamba user
-RUN /usr/local/bin/_dockerfile_initialize_user_accounts.sh && \
-    /usr/local/bin/_dockerfile_setup_root_prefix.sh
-
-
 # Change the GID/UID of wine to values which work with github actions
-RUN chown ${NEW_MAMBA_USER_ID}:${NEW_MAMBA_USER_GID} /wine && \
- chown -R ${NEW_MAMBA_USER_ID}:${NEW_MAMBA_USER_GID} /wine/drive_c/users/$MAMBA_USER && \
- chown ${NEW_MAMBA_USER_ID}:${NEW_MAMBA_USER_GID} /wine/user.reg && \
- chown ${NEW_MAMBA_USER_ID}:${NEW_MAMBA_USER_GID} /wine/system.reg && \
- chown -R ${NEW_MAMBA_USER_ID}:${NEW_MAMBA_USER_GID} /home/$MAMBA_USER && \
- chown -R ${NEW_MAMBA_USER_ID}:${NEW_MAMBA_USER_GID} /opt/conda
+RUN chown ${ANYBODY_USER_ID}:${ANYBODY_USER_GID} /wine && \
+ chown -R ${ANYBODY_USER_ID}:${ANYBODY_USER_GID} /wine/drive_c/users/$ANYBODY_USER && \
+ chown ${ANYBODY_USER_ID}:${ANYBODY_USER_GID} /wine/user.reg && \
+ chown ${ANYBODY_USER_ID}:${ANYBODY_USER_GID} /wine/system.reg && \
+ chown -R ${ANYBODY_USER_ID}:${ANYBODY_USER_GID} /home/$ANYBODY_USER
 
 
-USER $MAMBA_USER
-
-
-RUN micromamba install --yes --name base --channel conda-forge --channel bioconda --channel anybody \
-   nomkl  \
-   snakemake-minimal \
-   pandas  \
-   pytest  \
-   pytest-xdist  \
-   pytest-order \
-   pytest-split \
-   anypytools \
-   pytest-h5compare && \
-   micromamba clean --all --yes && \
-   cd /opt/conda && \
-   #find -name '*.a' -delete && \
-   rm -rf ./include && \
-   rm ./lib/libpython3.1*.so.1.0 && \
-   #find -name '__pycache__' -type d -exec rm -rf '{}' '+' && \
-   rm -rf  ./lib/python3.1*/idlelib ./lib/python3.1*/ensurepip \
-      ./lib/libasan.so.5.0.0 \
-      ./lib/libtsan.so.0.0.0 \
-      ./lib/liblsan.so.0.0.0 \
-      ./lib/libubsan.so.1.0.0 \
-      ./bin/x86_64-conda-linux-gnu-ld \
-      ./bin/sqlite* \
-      ./share/terminfo && \
-   find ./lib/python3.1*/site-packages/scipy -name 'tests' -type d -exec rm -rf '{}' '+' && \
-   find ./lib/python3.1*/site-packages/numpy -name 'tests' -type d -exec rm -rf '{}' '+' && \
-   find ./lib/python3.1*/site-packages/pandas -name 'tests' -type d -exec rm -rf '{}' '+' && \
-   find ./lib/python3.1*/site-packages -name '*.pyx' -delete && \
-   rm -rf ./lib/python3.11/site-packages/uvloop/loop.c && \
-   mv /opt/conda/bin/clear  /opt/conda/bin/clear.back
-
-ENV PATH "$MAMBA_ROOT_PREFIX/bin:$PATH"
-
-
-ENV PYTHONHASHSEED=1234
+USER $ANYBODY_USER
