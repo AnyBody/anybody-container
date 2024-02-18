@@ -32,8 +32,8 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-        # with:
-        #    cleanup: false
+        with:
+           cleanup: false
 
       - name: Docker meta
         id: meta
