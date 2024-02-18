@@ -99,14 +99,14 @@ jobs:
               org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-github-actions"
               org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
 
-      - name: Clean up all docker images and cache
-        run: |
-          docker buildx prune -af
-          docker system prune -af
-          docker builder prune -af
-          docker image prune -af
+      # - name: Clean up all docker images and cache
+      #   run: |
+      #     docker buildx prune -af
+      #     docker system prune -af
+      #     docker builder prune -af
+      #     docker image prune -af
 
-      - name: Set up Docker Buildx
+      # - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
         with:
           cleanup: false
