@@ -23,7 +23,7 @@ jobs:
           - anybody_version: "8.0"
             anybody_version_patch: "0"
             anybody_version_suffix: ""
-            build_number: 0
+            build_number: 1
 
             
     steps:
