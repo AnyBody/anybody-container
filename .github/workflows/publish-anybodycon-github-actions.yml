@@ -38,8 +38,8 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            anybody/anybodycon
-            ghcr.io/anybody/anybodycon
+            anybody/anybodycon-github-actions
+            ghcr.io/anybody/anybodycon-github-actions
 
         
       - name: Log in to the Container registry
