@@ -78,11 +78,19 @@ ARG ANYBODY_USER_GID=1000
 # Change the default uid:gid to be easily compatible with github actions
 USER root
 
-RUN apt update && \
-    apt install -y sudo curl tar && \
-    addgroup --gid ${ANYBODY_USER_GID} ${ANYBODY_USER} && \
-    adduser --uid ${ANYBODY_USER_ID} --gid ${ANYBODY_USER_GID} --disabled-password --gecos "" ${ANYBODY_USER} && \
+RUN apt update && apt install -y sudo curl tar 
+
+RUN if [ ! $(getent group "${ANYBODY_USER_GID}") ]; then \
+       groupadd -g "${ANYBODY_USER_GID}" "${ANYBODY_USER}"; \
+    fi
+
+RUN if [ ! $(getent passwd "${ANYBODY_USER_ID}") ]; then \
+       useradd -u "${ANYBODY_USER_ID}" -g "${ANYBODY_USER_GID}" --disabled-password --gecos "" -ms /bin/bash "${ANYBODY_USER}"; \
+    fi
+
+RUN usermod -L ${ANYBODY_USER_ID} \
     echo "${ANYBODY_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
 
 
 # ## Make sure apt installs stuff in noninteractive mode 
