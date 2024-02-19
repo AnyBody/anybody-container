@@ -88,8 +88,7 @@ RUN if [ ! $(getent passwd "${ANYBODY_USER_ID}") ]; then \
        useradd -u "${ANYBODY_USER_ID}" -g "${ANYBODY_USER_GID}" -m -s /bin/bash "${ANYBODY_USER}"; \
     fi
 
-RUN usermod -L ${ANYBODY_USER_ID} \
-    echo "${ANYBODY_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN  echo "${ANYBODY_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 
 
