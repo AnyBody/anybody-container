@@ -78,13 +78,12 @@ ARG ANYBODY_USER_GID=1000
 # Change the default uid:gid to be easily compatible with github actions
 USER root
 
-RUN if [ ! $(getent group "${ANYBODY_USER_GID}") ]; then \
-       groupadd -g "${ANYBODY_USER_GID}" "${ANYBODY_USER}"; \
-    fi
+RUN apt update && \
+    apt install -y sudo curl tar && \
+    addgroup --gid ${ANYBODY_USER_GID} ${ANYBODY_USER} && \
+    adduser --uid ${ANYBODY_USER_ID} --gid ${ANYBODY_USER_GID} --disabled-password --gecos "" ${ANYBODY_USER} && \
+    echo "${ANYBODY_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-RUN if [ ! $(getent passwd "${ANYBODY_USER_ID}") ]; then \
-       useradd -u "${ANYBODY_USER_ID}" -g "${ANYBODY_USER_GID}" -ms /bin/bash "${ANYBODY_USER}"; \
-    fi
 
 # ## Make sure apt installs stuff in noninteractive mode 
 # ENV DEBIAN_FRONTEND noninteractive
@@ -109,7 +108,7 @@ COPY --from=build-base /etc/apt/keyrings/winehq-archive.key /etc/apt/keyrings/wi
 COPY --from=build-base /usr/share/keyrings/winehq-archive.key /usr/share/keyrings/winehq-archive.key
 
  RUN apt-get update \
-    && apt-get install -y ca-certificates \
+    && apt-get install -y ca-certificates\
     && apt-get update \
     && dpkg -i /tmp/wine-${WINECHANNEL}-i386_${WINEVERSION}_all.deb \
     && apt-get install -y --no-install-recommends --no-upgrade wine-${WINECHANNEL}-amd64=${WINEVERSION} \
@@ -202,9 +201,6 @@ ENV WINEPATH=C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}
 ENV PYTHONHASHSEED=1234
 
 
-
-
-
 #INSTALL GIT
 RUN apt-get update \
    && apt-get install -y --no-install-recommends --no-upgrade git \
@@ -217,6 +213,10 @@ ENV SystemRoot=c:\\windows
 ENV SystemDrive=c:
 
 USER ${ANYBODY_USER}
+
+RUN curl -fsSL https://pixi.sh/install.sh | bash && \
+    echo 'export PATH="$PATH:$HOME/.pixi/bin"' >> ~/.bashrc
+
 
 
 
