@@ -85,7 +85,7 @@ RUN if [ ! $(getent group "${ANYBODY_USER_GID}") ]; then \
     fi
 
 RUN if [ ! $(getent passwd "${ANYBODY_USER_ID}") ]; then \
-       useradd -u "${ANYBODY_USER_ID}" -g "${ANYBODY_USER_GID}" --disabled-password --gecos "" -ms /bin/bash "${ANYBODY_USER}"; \
+       adduser -u "${ANYBODY_USER_ID}" -g "${ANYBODY_USER_GID}" --disabled-password --gecos "" -ms /bin/bash "${ANYBODY_USER}"; \
     fi
 
 RUN usermod -L ${ANYBODY_USER_ID} \
