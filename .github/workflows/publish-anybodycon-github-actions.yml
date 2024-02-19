@@ -1,4 +1,4 @@
-name: Build and push AnyBodyCon linux images
+name: AnyBodyCon GitHub-actions linux images
 
 on:
   push:
@@ -32,16 +32,14 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-        with:
-           cleanup: false
 
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
         with:
           images: |
-            anybody/anybodycon
-            ghcr.io/anybody/anybodycon
+            anybody/anybodycon-github-actions
+            ghcr.io/anybody/anybodycon-github-actions
 
         
       - name: Log in to the Container registry
