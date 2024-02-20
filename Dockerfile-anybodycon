@@ -187,7 +187,7 @@ RUN rm -f /wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VER
 ENV WINEPATH=C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\\Python;C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\\Python\\Library\\mingw-w64\\bin;C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\\Python\\Library\\bin;C:\\Program\ Files\\AnyBody\ Technology\\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\\Python\\Scripts;c:\\windows\\system32;c:\\windows;c:\\windows\\system32\\wbem
 ENV PYTHONHASHSEED=1234
 
-
+USER root
 # #INSTALL GIT
 RUN apt-get update \
    && apt-get install -y --no-install-recommends --no-upgrade git \
@@ -199,7 +199,7 @@ RUN apt-get update \
 ENV SystemRoot=c:\\windows
 ENV SystemDrive=c:
 
-# USER ${ANYBODY_USER}
+USER ${ANYBODY_USER}
 
 RUN curl -fsSL https://pixi.sh/install.sh | bash && \
     echo 'export PATH="$PATH:$HOME/.pixi/bin"' >> ~/.bashrc
@@ -255,6 +255,8 @@ ARG WINECHANNEL
 ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
 ARG ANYBODY_VERSION_PATCH
+
+# ENTRYPOINT ["/bin/bash"]
 
 ARG ANYBODY_USER=anybodyuser
 
