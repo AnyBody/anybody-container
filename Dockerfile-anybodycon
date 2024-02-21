@@ -18,9 +18,16 @@ ARG DISTRO="debian"
 ARG DISTRO_VERSION="bookworm"
 ARG TAG="${DISTRO_VERSION}-20240211-slim"
 ARG WINEVERSION="9.0.0.0~${DISTRO_VERSION}-1"
-ARG USERNAME=anybodyuser
-ARG USER_UID=1000
-ARG USER_GID=1000
+# ARG USERNAME=anybodyuser
+# ARG GROUPNAME=anybodygroup
+# ARG USER_UID=1000
+# ARG USER_GID=1000
+
+ARG USERNAME=runner
+ARG GROUPNAME=docker
+ARG USER_UID=1001
+ARG USER_GID=121
+
 
 # ARG BASE_IMAGE="mcr.microsoft.com/vscode/devcontainers/universal"
 # ARG DISTRO="ubuntu"
@@ -40,7 +47,8 @@ FROM ${BASE_IMAGE}:${TAG} AS anybody-build-store
 ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
 ARG ANYBODY_VERSION_PATCH
-ARG USERNAME
+ARG USERNAME 
+ARG GROUPNAME
 
 RUN apt-get update && apt-get install -y --no-install-recommends wget unzip ca-certificates
 RUN wget -nc https://anybodycloudci.blob.core.windows.net/windows-anybodycon/anybody-minimal-${ANYBODY_VERSION}.${ANYBODY_VERSION_PATCH}${ANYBODY_VERSION_SUFFIX}.zip
@@ -58,6 +66,7 @@ ARG DISTRO
 ARG DISTRO_VERSION
 ARG WINEVERSION
 ARG USERNAME
+ARG GROUPNAME
 ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
 ARG ANYBODY_VERSION_PATCH
@@ -101,6 +110,7 @@ ARG ANYBODY_VERSION_SUFFIX
 ARG ANYBODY_VERSION_PATCH
 
 ARG USERNAME
+ARG GROUPNAME
 ARG USER_UID
 ARG USER_GID
 
@@ -120,13 +130,11 @@ RUN if [ ! $(getent passwd "${USER_UID}") ]; then \
 
 # Rename the user/group if it already exists and has a different name
 RUN usermod -l $USERNAME $(getent passwd $USER_UID | cut -d: -f1)
-RUN groupmod -n $USERNAME $(getent group $USER_GID | cut -d: -f1)
+RUN groupmod -n $GROUPNAME $(getent group $USER_GID | cut -d: -f1)
 
 # Move the home directory if it is not already in the correct location
 RUN usermod "--login=${USERNAME}" "--home=/home/${USERNAME}" \
-        --move-home "-u ${USER_UID}" "${USERNAME}" && \
-    groupmod "--new-name=${USERNAME}" \
-             "-g ${USER_GID}" "${USERNAME}"
+        --move-home "-u ${USER_UID}" "${USERNAME}"
 
 # Add user to sudoers
 RUN  echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
@@ -266,6 +274,12 @@ RUN rm -rf  /opt/wine-stable/lib64/wine/x86_64-windows/mshtml.dll && \
  rm -rf /opt/wine-stable/lib64/wine/x86_64-windows/ieframe.dll 
 
 
+RUN if [[ ${USER_UID} == 1001 ]]; then \
+    mkdir -p /github && chown -R ${USER_UID}:${USER_GID} /github && \
+    ln -s /home/${ANYBODY_USER} /github/home; \
+    fi
+
+
 USER ${USERNAME}
 
 ENV RLM_LICENSE=5053@104.46.46.229
@@ -282,6 +296,7 @@ ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
 ARG ANYBODY_VERSION_PATCH
 ARG USERNAME
+ARG GROUPNAME
 ARG USER_UID
 ARG USER_GID
 # ENTRYPOINT ["/bin/bash"]

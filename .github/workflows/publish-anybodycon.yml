@@ -13,7 +13,7 @@ env:
   ANYBODY_VERSION: "8.0"
   ANYBODY_VERSION_PATCH: "0"
   ANYBODY_VERSION_SUFFIX: ""
-  BUILD_NUMBER: 3
+  BUILD_NUMBER: 4
 
 jobs:
   create-anybodycon-image:
@@ -60,6 +60,9 @@ jobs:
             ANYBODY_VERSION=${{ env.ANYBODY_VERSION }}
             ANYBODY_VERSION_PATCH=${{ env.ANYBODY_VERSION_PATCH }}
             ANYBODY_VERSION_SUFFIX=${{ env.ANYBODY_VERSION_SUFFIX }}
+            USERNAME=anybodyuser
+            USER_UID=1000
+            USER_GID=1000
           tags: |
               ghcr.io/anybody/anybodycon:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_VERSION_PATCH }}${{ env.ANYBODY_VERSION_SUFFIX }}-${{ env.BUILD_NUMBER }}
               ghcr.io/anybody/anybodycon:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_VERSION_PATCH }}${{ env.ANYBODY_VERSION_SUFFIX }}
@@ -118,6 +121,8 @@ jobs:
             DISTRO_VERSION=focal
             TAG=2.8.0-focal
             USERNAME=vscode
+            USER_UID=1000
+            USER_GID=1000
           tags: |
               ghcr.io/anybody/anybodycon-devcontainer:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_VERSION_PATCH }}${{ env.ANYBODY_VERSION_SUFFIX }}-${{ env.BUILD_NUMBER }}
               ghcr.io/anybody/anybodycon-devcontainer:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_VERSION_PATCH }}${{ env.ANYBODY_VERSION_SUFFIX }}
@@ -132,3 +137,62 @@ jobs:
 
 
 
+
+
+  create-github-actions-image:
+    name:  AnyBodyCon GitHub Actions image 
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+            
+    steps:
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            anybody/anybodycon-github-actions
+            ghcr.io/anybody/anybodycon-github-actions
+
+      - name: Log in to the Container registry
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build AnyBodyCon-github-actions image
+        uses: docker/build-push-action@v4
+        with:
+          file: Dockerfile-anybodycon
+          push: ${{ github.event_name != 'pull_request' }}
+          cache-from: type=gha, scope=${{ github.workflow }}
+          cache-to: type=gha, scope=${{ github.workflow }}
+          build-args: |
+            ANYBODY_VERSION=${{ env.ANYBODY_VERSION }}
+            ANYBODY_VERSION_PATCH=${{ env.ANYBODY_VERSION_PATCH }}
+            ANYBODY_VERSION_SUFFIX=${{ env.ANYBODY_VERSION_SUFFIX }}
+            USER_UID=1001
+            USER_GID=121
+            USERNAME=runner
+            GROUPNAME=docker
+          tags: |
+            ghcr.io/anybody/anybodycon-github-actions:${{ env.anybody_version }}.${{ env.anybody_version_patch }}${{ env.anybody_version_suffix }}-${{ env.build_number }}
+            ghcr.io/anybody/anybodycon-github-actions:${{ env.anybody_version }}.${{ env.anybody_version_patch }}${{ env.anybody_version_suffix }}
+            ghcr.io/anybody/anybodycon-github-actions:${{ env.anybody_version }}${{ env.anybody_version_suffix }}
+            ghcr.io/anybody/anybodycon-github-actions:latest${{ env.anybody_version_suffix }}
+          labels: |
+            org.opencontainers.image.title="anybodycon-github-actions"
+            org.opencontainers.image.description="Image with AnyBody in a linux docker container configured for github actions"
+            org.opencontainers.image.version="${{ env.anybody_version }}.${{ env.anybody_version_patch }}${{ env.anybody_version_suffix }}"
+            org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-github-actions"
+            org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
+
+            
