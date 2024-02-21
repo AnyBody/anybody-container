@@ -4,18 +4,32 @@
 ARG ANYBODY_VERSION="8.0"
 ARG ANYBODY_VERSION_PATCH="0"
 ARG ANYBODY_VERSION_SUFFIX=""
+# ARG USERNAME=anybodyuser
 
-ARG BASE_IMAGE="debian"
-
-ARG DISTRO="debian"
-
+# ARG BASE_IMAGE="debian"
+# ARG DISTRO="debian"
 # ARG DISTRO_VERSION="bullseye"
 # ARG TAG="${DISTRO_VERSION}-20230411-slim"
 # ARG WINEVERSION="4.0.4~${DISTRO_VERSION}"
 
+
+ARG BASE_IMAGE="debian"
+ARG DISTRO="debian"
 ARG DISTRO_VERSION="bookworm"
 ARG TAG="${DISTRO_VERSION}-20240211-slim"
 ARG WINEVERSION="9.0.0.0~${DISTRO_VERSION}-1"
+ARG USERNAME=anybodyuser
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+# ARG BASE_IMAGE="mcr.microsoft.com/vscode/devcontainers/universal"
+# ARG DISTRO="ubuntu"
+# ARG DISTRO_VERSION="focal"
+# ARG TAG="2.8.0-${DISTRO_VERSION}"
+# ARG WINEVERSION="9.0.0.0~${DISTRO_VERSION}-1"
+# ARG USERNAME=vscode
+# ARG USER_UID=1000
+# ARG USER_GID=1000
 
 
 ARG WINECHANNEL="stable"
@@ -26,6 +40,8 @@ FROM ${BASE_IMAGE}:${TAG} AS anybody-build-store
 ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
 ARG ANYBODY_VERSION_PATCH
+ARG USERNAME
+
 RUN apt-get update && apt-get install -y --no-install-recommends wget unzip ca-certificates
 RUN wget -nc https://anybodycloudci.blob.core.windows.net/windows-anybodycon/anybody-minimal-${ANYBODY_VERSION}.${ANYBODY_VERSION_PATCH}${ANYBODY_VERSION_SUFFIX}.zip
 RUN unzip anybody-minimal-${ANYBODY_VERSION}.${ANYBODY_VERSION_PATCH}${ANYBODY_VERSION_SUFFIX}.zip
@@ -36,10 +52,12 @@ RUN tar -xzf anybody-${ANYBODY_VERSION}-minimal-python.tar.gz
 # Run an intermediate docker step to get the Wine apt sources/keys, and build 
 # a dummy wine-stable-i386 package to shawdows the 32bit dependency.
 FROM ${BASE_IMAGE}:${TAG} AS build-base
+ARG BASE_IMAGE
 ARG WINECHANNEL
 ARG DISTRO
 ARG DISTRO_VERSION
 ARG WINEVERSION
+ARG USERNAME
 ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
 ARG ANYBODY_VERSION_PATCH
@@ -58,21 +76,18 @@ RUN apt-get update \
     && wget -nc https://dl.winehq.org/wine-builds/${DISTRO}/dists/${DISTRO_VERSION}/winehq-${DISTRO_VERSION}.sources \
     && mv winehq-${DISTRO_VERSION}.sources /etc/apt/sources.list.d/ 
 
-COPY create-dummy-packages.sh /fake-wine-dependencies/create-dummy-packages.sh
-RUN cd /fake-wine-dependencies && \
-    bash create-dummy-packages.sh libsane1 libasound2 libasound2-plugins libasound2-data libsamplerate0 \
-    xkb-data libnss3 libsnmp40 libvpx7 shared-mime-info libgstreamer-plugins-base1.0-0 libvorbis0a libheif1 libtheora0 \
-    libjack-jackd2-0 liborc-0.4-0 libpulse0 libharfbuzz0b libde265-0 libpixman-1-0 libmp3lame0 libthai-data libzvbi0 libva2 \
-    ocl-icd-libopencl1 libgstreamer1.0-0 libusb-1.0-0  libxvidcore4 libvorbisenc2 libpango-1.0-0 libwebp7 libsndfile1 libpoppler-glib8 
-
-
-# Cretae fake wine package with explicit version number
-RUN cd fake-wine-dependencies && \
-    echo -e "Section: misc\nPriority: optional\nStandards-Version: 3.9.2\n\nPackage: {{PACKAGE_NAME}}\nVersion: 99:99\nMaintainer: Morten Lund <mel@anybodytech.com>\nArchitecture: all\nDescription: Dummy package" > dummy-package.equivs  && \
-    cp dummy-package.equivs wine-${WINECHANNEL}-i386.equivs && \
-    sed -i "s/{{PACKAGE_NAME}}/wine-${WINECHANNEL}-i386/g" wine-${WINECHANNEL}-i386.equivs && \
-    sed -i "s/99:99/${WINEVERSION}/g" wine-${WINECHANNEL}-i386.equivs && \
-    equivs-build wine-${WINECHANNEL}-i386.equivs
+COPY --chmod=0755 create-dummy-packages.sh  /
+RUN ./create-dummy-packages.sh wine-${WINECHANNEL}-i386 ${WINEVERSION}
+# Only fake dependencies for debian
+RUN  if [[ $DISTRO == "debian" ]]; then \
+         ./create-dummy-packages.sh libsane1 libasound2 libasound2-plugins libasound2-data xkb-data \
+         libvpx7 shared-mime-info libnss3 libgstreamer-plugins-base1.0-0 libvorbis0a \
+         libtheora0 libjack-jackd2-0 libsamplerate0 liborc-0.4-0 libsnmp40 libharfbuzz0b \
+         libde265-0 libpixman-1-0 libmp3lame0 libpoppler-glib8 libsndfile1 libpango-1.0-0 \
+         libxvidcore4 libgstreamer1.0-0 ocl-icd-libopencl1 libheif1 libthai-data libzvbi0 \
+         libva2 libusb-1.0-0 libvorbisenc2 libwebp7 \
+         99:99; \
+     fi
 
 
 FROM ${BASE_IMAGE}:${TAG} as big_image
@@ -85,9 +100,9 @@ ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
 ARG ANYBODY_VERSION_PATCH
 
-ARG ANYBODY_USER=anybodyuser
-ARG ANYBODY_USER_ID=1000
-ARG ANYBODY_USER_GID=1000
+ARG USERNAME
+ARG USER_UID
+ARG USER_GID
 
 
 # Change the default uid:gid to be easily compatible with github actions
@@ -95,21 +110,32 @@ USER root
 
 RUN apt update && apt install -y sudo curl tar 
 
-RUN if [ ! $(getent group "${ANYBODY_USER_GID}") ]; then \
-       groupadd -g "${ANYBODY_USER_GID}" "${ANYBODY_USER}"; \
+# Create the user with the UID and GID if they do not exist
+RUN if [ ! $(getent group "${USER_GID}") ]; then \
+       groupadd -g "${USER_GID}" "${USERNAME}"; \
+    fi
+RUN if [ ! $(getent passwd "${USER_UID}") ]; then \
+       useradd -u "${USER_UID}" -g "${USER_GID}" -m -s /bin/bash "${USERNAME}"; \
     fi
 
-RUN if [ ! $(getent passwd "${ANYBODY_USER_ID}") ]; then \
-       useradd -u "${ANYBODY_USER_ID}" -g "${ANYBODY_USER_GID}" -m -s /bin/bash "${ANYBODY_USER}"; \
-    fi
+# Rename the user/group if it already exists and has a different name
+RUN usermod -l $USERNAME $(getent passwd $USER_UID | cut -d: -f1)
+RUN groupmod -n $USERNAME $(getent group $USER_GID | cut -d: -f1)
 
-RUN  echo "${ANYBODY_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+# Move the home directory if it is not already in the correct location
+RUN usermod "--login=${USERNAME}" "--home=/home/${USERNAME}" \
+        --move-home "-u ${USER_UID}" "${USERNAME}" && \
+    groupmod "--new-name=${USERNAME}" \
+             "-g ${USER_GID}" "${USERNAME}"
+
+# Add user to sudoers
+RUN  echo "${USERNAME} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 
 
 ENV WINEPREFIX=/wine
 
-COPY --from=build-base /fake-wine-dependencies /tmp/fake-wine-dependencies
+COPY --from=build-base /*.deb /tmp/fake-wine-dependencies/
 COPY --from=build-base /etc/apt/sources.list.d/ /etc/apt/sources.list.d/
 COPY --from=build-base /etc/apt/keyrings/winehq-archive.key /etc/apt/keyrings/winehq-archive.key
 COPY --from=build-base /usr/share/keyrings/winehq-archive.key /usr/share/keyrings/winehq-archive.key
@@ -127,33 +153,33 @@ COPY --from=build-base /usr/share/keyrings/winehq-archive.key /usr/share/keyring
 
 ENV PATH="/opt/wine-${WINECHANNEL}/bin:${PATH}"
 
-RUN mkdir -p /wine && chown -R $ANYBODY_USER: /wine && \
+RUN mkdir -p /wine && chown -R $USER_UID:$USER_GID /wine && \
     echo -e '#!/bin/bash\nwine $WINEPREFIX'"/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBodyCon.exe \"\$@\"\n" > /usr/bin/anybodycon && \
-    chmod +x /usr/bin/anybodycon && chown -R $ANYBODY_USER: /usr/bin/anybodycon
+    chmod +x /usr/bin/anybodycon && chown -R $USER_UID:$USER_GID  /usr/bin/anybodycon
 
-USER ${ANYBODY_USER}
+USER ${USERNAME}
  
  
 RUN WINEPREFIX=/wine winecfg 
 
 
-COPY --from=anybody-build-store --chown=${ANYBODY_USER_ID} ["anybody" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
+COPY --from=anybody-build-store --chown=${USER_UID} ["anybody" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/"]
 
 
 RUN /opt/wine-stable/bin/wine reg add HKCR\\AnyBody.any\\shell\\Open\\command /v "" /t REG_SZ /d "\"C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}\AnyBody.exe\" \"%1\"" && \
     sleep 5 && \
     /opt/wine-stable/bin/wine reg add "HKLM\\SOFTWARE\\AnyBody Technology\\AnyBody.${ANYBODY_VERSION} (64-bit)${ANYBODY_VERSION_SUFFIX/_/ }" /v "InstallDir" /t REG_SZ /d "C:\Program Files\AnyBody Technology\AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}" && \
     sleep 5 && \
-    mkdir -p /wine/drive_c/users/${ANYBODY_USER}/My\ Documents && \
-    mkdir -p /wine/drive_c/users/${ANYBODY_USER}/AppData/Local/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    mkdir -p /wine/drive_c/users/${ANYBODY_USER}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    mkdir -p /wine/drive_c/users/${ANYBODY_USER}/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+    mkdir -p /wine/drive_c/users/${USERNAME}/My\ Documents && \
+    mkdir -p /wine/drive_c/users/${USERNAME}/AppData/Local/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+    mkdir -p /wine/drive_c/users/${USERNAME}/AppData/Roaming/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
+    mkdir -p /wine/drive_c/users/${USERNAME}/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
     mkdir -p /wine/drive_c/ProgramData/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x && \
-    mkdir -p /wine/drive_c/users/${ANYBODY_USER}/Local\ Settings/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x
+    mkdir -p /wine/drive_c/users/${USERNAME}/Local\ Settings/Application\ Data/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}.x
  
 # Ensure that root can also use wine
 USER root
-RUN cp -R /wine/drive_c/users/${ANYBODY_USER} /wine/drive_c/users/root && \
+RUN cp -R /wine/drive_c/users/${USERNAME} /wine/drive_c/users/root && \
     chown -R root /wine/drive_c/users/root && \
     mkdir /rootwine && \
     ln -s /wine/dosdevices /rootwine/dosdevices && \
@@ -179,7 +205,7 @@ COPY first-run-notice.txt /usr/local/etc/vscode-dev-containers/first-run-notice.
 
 
 ## SETUP PYTHON ANYBODY PYTHON ENVIRONMENT
-COPY --from=anybody-build-store --chown=${ANYBODY_USER_ID} ["Python" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/Python"]
+COPY --from=anybody-build-store --chown=${USER_UID} ["Python" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/Python"]
 
 # Remove _pth file to allow overwriting PYTHON environment variables etc. 
 RUN rm -f /wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/Python/python*._pth 
@@ -199,15 +225,15 @@ RUN apt-get update \
 ENV SystemRoot=c:\\windows
 ENV SystemDrive=c:
 
-USER ${ANYBODY_USER}
+USER ${USERNAME}
 
 RUN curl -fsSL https://pixi.sh/install.sh | bash && \
     echo 'export PATH="$PATH:$HOME/.pixi/bin"' >> ~/.bashrc
 
 
-# # COPY --chown=${ANYBODY_USER_ID} ["AnyBodyCon.exe" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBodyCon.exe"]
-# # COPY --chown=${ANYBODY_USER_ID} ["AnyBodyCon-2024_02_16_05_07.map" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBodyCon-2024_02_16_05_07.map"]
-# # COPY --chown=${ANYBODY_USER_ID} ["AnyBodyCon-2024_02_16_05_07.pdb" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBodyCon-2024_02_16_05_07.pdb"]
+# # COPY --chown=${USER_UID} ["AnyBodyCon.exe" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBodyCon.exe"]
+# # COPY --chown=${USER_UID} ["AnyBodyCon-2024_02_16_05_07.map" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBodyCon-2024_02_16_05_07.map"]
+# # COPY --chown=${USER_UID} ["AnyBodyCon-2024_02_16_05_07.pdb" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_VERSION_SUFFIX}/AnyBodyCon-2024_02_16_05_07.pdb"]
 
 
 USER root
@@ -240,7 +266,7 @@ RUN rm -rf  /opt/wine-stable/lib64/wine/x86_64-windows/mshtml.dll && \
  rm -rf /opt/wine-stable/lib64/wine/x86_64-windows/ieframe.dll 
 
 
-USER ${ANYBODY_USER}
+USER ${USERNAME}
 
 ENV RLM_LICENSE=5053@104.46.46.229
 ENV RLM_LICENSE_PASSWORD=9h7KhWshjTpN
@@ -255,10 +281,11 @@ ARG WINECHANNEL
 ARG ANYBODY_VERSION
 ARG ANYBODY_VERSION_SUFFIX
 ARG ANYBODY_VERSION_PATCH
-
+ARG USERNAME
+ARG USER_UID
+ARG USER_GID
 # ENTRYPOINT ["/bin/bash"]
 
-ARG ANYBODY_USER=anybodyuser
 
 ENV PATH="/opt/wine-${WINECHANNEL}/bin:${PATH}"
 ENV WINEDEBUG=-all
@@ -272,4 +299,4 @@ ENV SystemDrive=c:
 ENV WINEPREFIX=/wine
 
 COPY --from=big_image / /
-USER ${ANYBODY_USER}
+USER ${USERNAME}

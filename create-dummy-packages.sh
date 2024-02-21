@@ -1,12 +1,16 @@
+#!/bin/bash
+# put last argument in package_version and all other arguments in package_names
+package_version=${!#}
+package_names=("${@:1:$(($#-1))}")
 
-package_names=("$@")
+echo "Package version: $package_version"
+echo "Package names: ${package_names[@]}"
 
-echo -e "Section: misc\nPriority: optional\nStandards-Version: 3.9.2\n\nPackage: {{PACKAGE_NAME}}\nVersion: 99:99\nMaintainer: Morten Lund <mel@anybodytech.com>\nArchitecture: all\nDescription: Dummy package" > dummy-package.equivs 
+# Loop over all package names and create a dummy package for each
 
 for package_name in "${package_names[@]}"
 do
-    cp dummy-package.equivs "$package_name.equivs"
-    sed -i "s/{{PACKAGE_NAME}}/$package_name/g" "$package_name.equivs"
+    echo -e "Section: misc\nPriority: optional\nStandards-Version: 3.9.2\n\nPackage: $package_name\nVersion: $package_version\nMaintainer: Morten Lund <mel@anybodytech.com>\nArchitecture: all\nDescription: Dummy package" > "$package_name.equivs" 
     equivs-build "$package_name.equivs"
 done
 

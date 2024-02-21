@@ -73,62 +73,62 @@ jobs:
               org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
 
 
-  # create-anybodycon-devcontainer-image:
-  #   name:  AnyBodyCon DevContainer image 
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-  #     packages: write
+  create-anybodycon-devcontainer-image:
+    name:  AnyBodyCon DevContainer image 
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
             
-  #   steps:
+    steps:
 
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-  #     - name: Docker meta
-  #       id: meta
-  #       uses: docker/metadata-action@v4
-  #       with:
-  #         images: |
-  #           anybody/anybodycon-devcontainer
-  #           ghcr.io/anybody/anybodycon-devcontainer
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            anybody/anybodycon-devcontainer
+            ghcr.io/anybody/anybodycon-devcontainer
 
-  #     - name: Log in to the Container registry
-  #       if: ${{ github.event_name != 'pull_request' }}
-  #       uses: docker/login-action@v2
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to the Container registry
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Build and push AnyBodyCon devcontainer image
-  #       uses: docker/build-push-action@v4
-  #       with:
-  #         file: Dockerfile-anybodycon
-  #         push: ${{ github.event_name != 'pull_request' }}
-  #         cache-from: type=gha, scope=${{ github.workflow }}
-  #         cache-to: type=gha, scope=${{ github.workflow }}
-  #         build-args: |
-  #           ANYBODY_VERSION=${{ env.ANYBODY_VERSION }}
-  #           ANYBODY_VERSION_PATCH=${{ env.ANYBODY_VERSION_PATCH }}
-  #           ANYBODY_VERSION_SUFFIX=${{ env.ANYBODY_VERSION_SUFFIX }}
-  #           BASE_IMAGE=mcr.microsoft.com/vscode/devcontainers/universal
-  #           DISTRO=ubuntu
-  #           DISTRO_VERSION=focal
-  #           ANYBODY_USER=codespace
-  #           TAG=2.8.0-focal
-  #         tags: |
-  #             ghcr.io/anybody/anybodycon-devcontainer:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_VERSION_PATCH }}${{ env.ANYBODY_VERSION_SUFFIX }}-${{ env.BUILD_NUMBER }}
-  #             ghcr.io/anybody/anybodycon-devcontainer:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_VERSION_PATCH }}${{ env.ANYBODY_VERSION_SUFFIX }}
-  #             ghcr.io/anybody/anybodycon-devcontainer:${{ env.ANYBODY_VERSION }}${{ env.ANYBODY_VERSION_SUFFIX }}
-  #             ghcr.io/anybody/anybodycon-devcontainer:latest${{ env.ANYBODY_VERSION_SUFFIX }}
-  #         labels: |
-  #             org.opencontainers.image.title="anybodycon-devcontainer"
-  #             org.opencontainers.image.description="This is the slim anybodycon image configured for Development Containers, like for example GitHub Codespaces and similar services"
-  #             org.opencontainers.image.version="${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_VERSION_PATCH }}${{ env.ANYBODY_VERSION_SUFFIX }}"
-  #             org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-devcontainer"
-  #             org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
+      - name: Build and push AnyBodyCon devcontainer image
+        uses: docker/build-push-action@v4
+        with:
+          file: Dockerfile-anybodycon
+          push: ${{ github.event_name != 'pull_request' }}
+          cache-from: type=gha, scope=${{ github.workflow }}
+          cache-to: type=gha, scope=${{ github.workflow }}
+          build-args: |
+            ANYBODY_VERSION=${{ env.ANYBODY_VERSION }}
+            ANYBODY_VERSION_PATCH=${{ env.ANYBODY_VERSION_PATCH }}
+            ANYBODY_VERSION_SUFFIX=${{ env.ANYBODY_VERSION_SUFFIX }}
+            BASE_IMAGE=mcr.microsoft.com/vscode/devcontainers/universal
+            DISTRO=ubuntu
+            DISTRO_VERSION=focal
+            TAG=2.8.0-focal
+            USERNAME=vscode
+          tags: |
+              ghcr.io/anybody/anybodycon-devcontainer:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_VERSION_PATCH }}${{ env.ANYBODY_VERSION_SUFFIX }}-${{ env.BUILD_NUMBER }}
+              ghcr.io/anybody/anybodycon-devcontainer:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_VERSION_PATCH }}${{ env.ANYBODY_VERSION_SUFFIX }}
+              ghcr.io/anybody/anybodycon-devcontainer:${{ env.ANYBODY_VERSION }}${{ env.ANYBODY_VERSION_SUFFIX }}
+              ghcr.io/anybody/anybodycon-devcontainer:latest${{ env.ANYBODY_VERSION_SUFFIX }}
+          labels: |
+              org.opencontainers.image.title="anybodycon-devcontainer"
+              org.opencontainers.image.description="This is the slim anybodycon image configured for Development Containers, like for example GitHub Codespaces and similar services"
+              org.opencontainers.image.version="${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_VERSION_PATCH }}${{ env.ANYBODY_VERSION_SUFFIX }}"
+              org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-devcontainer"
+              org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
 
 
 
