@@ -18,15 +18,15 @@ ARG DISTRO="debian"
 ARG DISTRO_VERSION="bookworm"
 ARG TAG="${DISTRO_VERSION}-20240211-slim"
 ARG WINEVERSION="9.0.0.0~${DISTRO_VERSION}-1"
-# ARG USERNAME=anybodyuser
-# ARG GROUPNAME=anybodygroup
-# ARG USER_UID=1000
-# ARG USER_GID=1000
+ARG USERNAME=anybodyuser
+ARG GROUPNAME=anybodygroup
+ARG USER_UID=1000
+ARG USER_GID=1000
 
-ARG USERNAME=runner
-ARG GROUPNAME=docker
-ARG USER_UID=1001
-ARG USER_GID=121
+# ARG USERNAME=runner
+# ARG GROUPNAME=docker
+# ARG USER_UID=1001
+# ARG USER_GID=121
 
 
 # ARG BASE_IMAGE="mcr.microsoft.com/vscode/devcontainers/universal"
@@ -49,6 +49,10 @@ ARG ANYBODY_VERSION_SUFFIX
 ARG ANYBODY_VERSION_PATCH
 ARG USERNAME 
 ARG GROUPNAME
+
+#Fix issue on older debian images
+RUN rm /etc/apt/sources.list.d/yarn.list || true
+
 
 RUN apt-get update && apt-get install -y --no-install-recommends wget unzip ca-certificates
 RUN wget -nc https://anybodycloudci.blob.core.windows.net/windows-anybodycon/anybody-minimal-${ANYBODY_VERSION}.${ANYBODY_VERSION_PATCH}${ANYBODY_VERSION_SUFFIX}.zip
@@ -74,6 +78,10 @@ ARG ANYBODY_VERSION_PATCH
 SHELL ["/bin/bash", "-c"]
 
 USER root
+
+#Fix issue on older debian images
+RUN rm /etc/apt/sources.list.d/yarn.list || true
+
 # Get the necessary apt list and keys to install from winehq
 RUN apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends \
@@ -117,6 +125,10 @@ ARG USER_GID
 
 # Change the default uid:gid to be easily compatible with github actions
 USER root
+
+
+#Fix issue on older debian images
+RUN rm /etc/apt/sources.list.d/yarn.list || true
 
 RUN apt update && apt install -y sudo curl tar 
 
