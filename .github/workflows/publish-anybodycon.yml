@@ -117,9 +117,9 @@ jobs:
             ANYBODY_VERSION_PATCH=${{ env.ANYBODY_VERSION_PATCH }}
             ANYBODY_VERSION_SUFFIX=${{ env.ANYBODY_VERSION_SUFFIX }}
             BASE_IMAGE=mcr.microsoft.com/vscode/devcontainers/miniconda
-            DISTRO=ubuntu
-            DISTRO_VERSION=focal
-            TAG=2.8.0-focal
+            DISTRO=debian
+            DISTRO_VERSION=bullseye
+            TAG=0.202.3-3
             USERNAME=vscode
             USER_UID=1000
             USER_GID=1000

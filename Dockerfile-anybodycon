@@ -88,7 +88,7 @@ RUN apt-get update \
 COPY --chmod=0755 create-dummy-packages.sh  /
 RUN ./create-dummy-packages.sh wine-${WINECHANNEL}-i386 ${WINEVERSION}
 # Only fake dependencies for debian
-RUN  if [[ $DISTRO == "debian" ]]; then \
+RUN  if [[ $BASE_IMAGE != *"devcontainer"* ]]; then \
          ./create-dummy-packages.sh libsane1 libasound2 libasound2-plugins libasound2-data xkb-data \
          libvpx7 shared-mime-info libnss3 libgstreamer-plugins-base1.0-0 libvorbis0a \
          libtheora0 libjack-jackd2-0 libsamplerate0 liborc-0.4-0 libsnmp40 libharfbuzz0b \
