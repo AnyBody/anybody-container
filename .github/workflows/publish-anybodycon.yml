@@ -184,14 +184,14 @@ jobs:
             USERNAME=runner
             GROUPNAME=docker
           tags: |
-            ghcr.io/anybody/anybodycon-github-actions:${{ env.anybody_version }}.${{ env.anybody_version_patch }}${{ env.anybody_version_suffix }}-${{ env.build_number }}
-            ghcr.io/anybody/anybodycon-github-actions:${{ env.anybody_version }}.${{ env.anybody_version_patch }}${{ env.anybody_version_suffix }}
-            ghcr.io/anybody/anybodycon-github-actions:${{ env.anybody_version }}${{ env.anybody_version_suffix }}
-            ghcr.io/anybody/anybodycon-github-actions:latest${{ env.anybody_version_suffix }}
+            ghcr.io/anybody/anybodycon-github-actions:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_VERSION_PATCH }}${{ env.ANYBODY_VERSION_SUFFIX }}-${{ env.BUILD_NUMBER }}
+            ghcr.io/anybody/anybodycon-github-actions:${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_VERSION_PATCH }}${{ env.ANYBODY_VERSION_SUFFIX }}
+            ghcr.io/anybody/anybodycon-github-actions:${{ env.ANYBODY_VERSION }}${{ env.ANYBODY_VERSION_SUFFIX }}
+            ghcr.io/anybody/anybodycon-github-actions:latest${{ env.ANYBODY_VERSION_SUFFIX }}
           labels: |
             org.opencontainers.image.title="anybodycon-github-actions"
             org.opencontainers.image.description="Image with AnyBody in a linux docker container configured for github actions"
-            org.opencontainers.image.version="${{ env.anybody_version }}.${{ env.anybody_version_patch }}${{ env.anybody_version_suffix }}"
+            org.opencontainers.image.version="${{ env.ANYBODY_VERSION }}.${{ env.ANYBODY_VERSION_PATCH }}${{ env.ANYBODY_VERSION_SUFFIX }}"
             org.opencontainers.image.url="https://github.com/AnyBody/anybody-container/pkgs/container/anybodycon-github-actions"
             org.opencontainers.image.licenses="https://www.anybodytech.com/legal/software-license-agreement/"
 
