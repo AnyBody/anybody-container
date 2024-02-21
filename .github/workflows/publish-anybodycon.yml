@@ -116,7 +116,7 @@ jobs:
             ANYBODY_VERSION=${{ env.ANYBODY_VERSION }}
             ANYBODY_VERSION_PATCH=${{ env.ANYBODY_VERSION_PATCH }}
             ANYBODY_VERSION_SUFFIX=${{ env.ANYBODY_VERSION_SUFFIX }}
-            BASE_IMAGE=mcr.microsoft.com/vscode/devcontainers/universal
+            BASE_IMAGE=mcr.microsoft.com/vscode/devcontainers/miniconda
             DISTRO=ubuntu
             DISTRO_VERSION=focal
             TAG=2.8.0-focal
@@ -173,7 +173,7 @@ jobs:
         with:
           file: Dockerfile-anybodycon
           push: ${{ github.event_name != 'pull_request' }}
-          cache-from: type=gha, scope=${{ github.workflow }}
+          # cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}
           build-args: |
             ANYBODY_VERSION=${{ env.ANYBODY_VERSION }}
