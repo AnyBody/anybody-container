@@ -11,9 +11,9 @@ on:
 
 env:
   ANYBODY_VERSION: "8.0"
-  ANYBODY_VERSION_PATCH: "0"
+  ANYBODY_VERSION_PATCH: "1"
   ANYBODY_VERSION_SUFFIX: ""
-  BUILD_NUMBER: 4
+  BUILD_NUMBER: 0
 
 jobs:
   create-anybodycon-image:
