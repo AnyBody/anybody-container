@@ -11,8 +11,8 @@ on:
 
 env:
   ANYBODY_VERSION: "8.0"
-  ANYBODY_VERSION_PATCH: "1"
-  ANYBODY_VERSION_SUFFIX: ""
+  ANYBODY_VERSION_PATCH: "2"
+  ANYBODY_VERSION_SUFFIX: "rc1"
   BUILD_NUMBER: 0
 
 jobs:
@@ -104,6 +104,13 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Clear up some disk space
+        run: |
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
 
       - name: Build and push AnyBodyCon devcontainer image
         uses: docker/build-push-action@v4
