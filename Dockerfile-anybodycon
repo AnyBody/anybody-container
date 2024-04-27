@@ -48,6 +48,7 @@ ARG WINECHANNEL="stable"
 FROM ${BASE_IMAGE}:${TAG} AS anybody-build-store
 ARG ANYBODY_VERSION
 ARG ANYBODY_BETA_SUFFIX
+ARG ANYBODY_RC_SUFFIX
 ARG ANYBODY_VERSION_PATCH
 ARG USERNAME 
 ARG GROUPNAME
@@ -57,8 +58,8 @@ RUN rm /etc/apt/sources.list.d/yarn.list || true
 
 
 RUN apt-get update && apt-get install -y --no-install-recommends wget unzip ca-certificates
-RUN wget -nc https://anybodycloudci.blob.core.windows.net/windows-anybodycon/anybody-minimal-${ANYBODY_VERSION}.${ANYBODY_VERSION_PATCH}${ANYBODY_BETA_SUFFIX}.zip
-RUN unzip anybody-minimal-${ANYBODY_VERSION}.${ANYBODY_VERSION_PATCH}${ANYBODY_BETA_SUFFIX}.zip
+RUN wget -nc https://anybodycloudci.blob.core.windows.net/windows-anybodycon/anybody-minimal-${ANYBODY_VERSION}.${ANYBODY_VERSION_PATCH}${ANYBODY_BETA_SUFFIX}${ANYBODY_RC_SUFFIX}.zip
+RUN unzip anybody-minimal-${ANYBODY_VERSION}.${ANYBODY_VERSION_PATCH}${ANYBODY_BETA_SUFFIX}${ANYBODY_RC_SUFFIX}.zip
 RUN wget -nc https://anybodycloudci.blob.core.windows.net/windows-anybodycon/anybody-${ANYBODY_VERSION}-minimal-python.tar.gz
 RUN tar -xzf anybody-${ANYBODY_VERSION}-minimal-python.tar.gz
 
