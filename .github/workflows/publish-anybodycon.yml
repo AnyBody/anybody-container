@@ -11,9 +11,9 @@ on:
 
 env:
   ANYBODY_VERSION: "8.0"
-  ANYBODY_VERSION_PATCH: "2"
+  ANYBODY_VERSION_PATCH: "3"
   ANYBODY_BETA_SUFFIX: ""
-  ANYBODY_RC_SUFFIX: "rc1"
+  ANYBODY_RC_SUFFIX: ""
   BUILD_NUMBER: 1
 
 jobs:
@@ -26,9 +26,6 @@ jobs:
 
             
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
