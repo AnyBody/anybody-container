@@ -11,10 +11,10 @@ on:
 
 env:
   ANYBODY_VERSION: "8.0"
-  ANYBODY_VERSION_PATCH: "3"
+  ANYBODY_VERSION_PATCH: "4"
   ANYBODY_BETA_SUFFIX: ""
   ANYBODY_RC_SUFFIX: ""
-  BUILD_NUMBER: 1
+  BUILD_NUMBER: 0
 
 jobs:
   create-anybodycon-image:
