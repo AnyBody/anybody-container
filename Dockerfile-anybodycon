@@ -230,7 +230,7 @@ COPY first-run-notice.txt /usr/local/etc/vscode-dev-containers/first-run-notice.
 
 
 ## SETUP PYTHON ANYBODY PYTHON ENVIRONMENT
-COPY --from=anybody-build-store --chown=${USER_UID} ["Python" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_BETA_SUFFIX}/Python"]
+COPY --from=anybody-build-store --chown=${USER_UID} ["python" ,  "/wine/drive_c/Program Files/AnyBody Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_BETA_SUFFIX}/Python"]
 
 # Remove _pth file to allow overwriting PYTHON environment variables etc. 
 RUN rm -f /wine/drive_c/Program\ Files/AnyBody\ Technology/AnyBody.${ANYBODY_VERSION}${ANYBODY_BETA_SUFFIX}/Python/python*._pth 
